@@ -6,7 +6,7 @@ The aws sdk + powerful high-level serverless utilities.
 const aws = require(`@serverless/aws-sdk`)
 
 // 2. set credentials globally for all services as usual.
-aws.config.update({ credentials: {}, region: 'us-east-1' })
+aws.config.update({ credentials: { accessKeyId: '', secretAccessKey: '' }, region: 'us-east-1' })
 
 // 3. use some powerful utilities. More info below.
 const certificate = await aws.utils.ensureCertificate({...})

@@ -7,6 +7,5 @@ module.exports = async (aws, params = {}) => {
     (zone) => zone.Name.includes(params.nakedDomain)
   )
 
-  // hosted zone id is always prefixed with this :(
   return hostedZone ? hostedZone.Id.replace('/hostedzone/', '') : null
 }
