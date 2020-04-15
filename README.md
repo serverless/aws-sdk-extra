@@ -16,21 +16,17 @@ const s3 = new aws.S3()
 
 ```
 
-# Reference
+# Utils Reference
 
-- [getDomainHostedZoneId](#getdomainhostedzoneid)
 - [ensureCertificate](#ensurecertificate)
 
-# getDomainHostedZoneId
-Returns the Hosted Zone ID based on the provided naked domain.
+# ensureCertificate
+Deploys an ACM certificate for the given domain. It attempts to validate the domain via DNS if it is managed by AWS, otherwise, validation has to be done manually.
 
 ```js
 const params = {
-  nakedDomain: 'serverless.com'
+  domain: 'serverless.com'
 }
 
-const { hostedZoneId } = await aws.utils.getDomainHostedZoneId(params)
+const { arn, status, domainHostedZoneId } = await aws.utils.ensureCertificate(params)
 ```
-
-
-# ensureCertificate
