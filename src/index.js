@@ -1,6 +1,7 @@
 const aws = require('aws-sdk')
 aws.utils = {}
 
-aws.utils.ensureCertificate = (params) => require('./ensureCertificate')(aws, params)
+aws.utils.deployCertificate = (params) => require('./deployCertificate')(aws, params)
+aws.utils.deployDistributionDns = (params) => require('./deployDistributionDns')(aws, params)
 
 module.exports = aws
