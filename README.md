@@ -1,5 +1,5 @@
 # Serverless AWS SDK
-The good old AWS SDK, plus powerful serverless utilities.
+The aws sdk + powerful serverless utilities
 
 ```js
 // 1. require the serverless aws sdk.
@@ -16,7 +16,7 @@ const s3 = new aws.S3()
 
 ```
 
-# Utils
+# Reference
 
 - [ensureCertificate](#ensurecertificate)
 
