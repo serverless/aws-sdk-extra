@@ -1,5 +1,5 @@
 # Serverless AWS SDK
-The aws sdk + powerful serverless utilities
+The aws sdk + powerful high-level serverless utilities.
 
 ```js
 // 1. require the serverless aws sdk.
@@ -18,6 +18,19 @@ const s3 = new aws.S3()
 
 # Reference
 
+- [getDomainHostedZoneId](#getdomainhostedzoneid)
 - [ensureCertificate](#ensurecertificate)
+
+# getDomainHostedZoneId
+Returns the Hosted Zone ID based on the provided naked domain.
+
+```js
+const params = {
+  nakedDomain: 'serverless.com'
+}
+
+const { hostedZoneId } = await aws.utils.getDomainHostedZoneId(params)
+```
+
 
 # ensureCertificate
