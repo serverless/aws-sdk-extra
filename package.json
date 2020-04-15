@@ -1,0 +1,27 @@
+{
+  "name": "@serverless/aws-sdk",
+  "version": "0.1.0",
+  "description": "Reusable utilities for AWS",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "jest ./tests/integration.test.js --testEnvironment node"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "aws-sdk": "^2.614.0",
+    "axios": "^0.19.2",
+    "deepmerge": "^4.2.2",
+    "ramda": "^0.26.1",
+    "shortid": "^2.2.15"
+  },
+  "devDependencies": {
+    "jest": "^25.1.0",
+    "babel-eslint": "9.0.0",
+    "eslint": "5.6.0",
+    "eslint-config-prettier": "^3.6.0",
+    "eslint-plugin-import": "^2.20.0",
+    "eslint-plugin-prettier": "^3.1.0",
+    "prettier": "^1.18.2"
+  }
+}
