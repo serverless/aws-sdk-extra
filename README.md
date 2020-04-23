@@ -18,28 +18,72 @@ const s3 = new aws.S3()
 
 # Reference
 
+- [deployDistributionDomain](#deployDistributionDomain)
 - [deployCertificate](#deployCertificate)
 - [deployDistributionDns](#deployDistributionDns)
+- [addDomainToDistribution](#addDomainToDistribution)
+- [getDomainHostedZoneId](#getDomainHostedZoneId)
+
+# deployDistributionDomain
+
+Deploys a CloudFront distribution domain by adding the domain to the distribution and deploying the certificate and DNS records.
+
+```js
+const params = {
+  domain: 'serverless.com',
+  distributionId: 'xxx'
+}
+
+const { certificateArn, certificateStatus, domainHostedZoneId } = await aws.utils.deployDistributionDomain(params)
+```
 
 # deployCertificate
-Deploys an ACM certificate for the given domain. It attempts to validate the domain via DNS if it is managed by AWS, otherwise, validation has to be done manually.
+
+Deploys a free ACM certificate for the given domain.
+
+```js
+const params = {
+  domain: 'serverless.com',
+}
+
+const { certificateArn, certificateStatus, domainHostedZoneId } = await aws.utils.deployCertificate(params)
+```
+
+# deployDistributionDns
+
+Deploys a DNS records for a distribution domain.
+
+```js
+const params = {
+  domain: 'serverless.com',
+  distributionUrl: 'xxx.cloudfront.net'
+}
+
+const { domainHostedZoneId } = await aws.utils.deployDistributionDns(params)
+```
+
+# addDomainToDistribution
+
+Adds a domain or subdomain to a CloudFront Distribution.
+
+```js
+const params = {
+  domain: 'serverless.com',
+  certificateArn: 'xxx:xxx',
+  certificateStatus: 'ISSUED',
+}
+
+const { domainHostedZoneId } = await aws.utils.addDomainToDistribution(params)
+```
+
+# getDomainHostedZoneId
+
+Fetches the hosted zone id for the given domain.
 
 ```js
 const params = {
   domain: 'serverless.com'
 }
 
-const { arn, status, domainHostedZoneId } = await aws.utils.deployCertificate(params)
-```
-
-# deployDistributionDns
-Deploys the domain DNS records for the provided distribution url. It also deploys DNS records for the `www` subdomain if the given domain is not a subdomain.
-
-```js
-const params = {
-  domain: 'serverless.com',
-  distributionUrl: 'https://xxx.cloudfront.net'
-}
-
-await aws.utils.deployDistributionDns(params)
+const { domainHostedZoneId } = await aws.utils.getDomainHostedZoneId(params)
 ```

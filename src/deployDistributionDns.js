@@ -1,39 +1,16 @@
-const getNakedDomain = ({ domain }) => {
-  const domainParts = domain.split('.')
-  const topLevelDomainPart = domainParts[domainParts.length - 1]
-  const secondLevelDomainPart = domainParts[domainParts.length - 2]
-  return `${secondLevelDomainPart}.${topLevelDomainPart}`
-}
-
-const getDomainHostedZoneId = async (aws, params = {}) => {
-  const route53 = new aws.Route53()
-  const hostedZonesRes = await route53.listHostedZonesByName().promise()
-
-  const hostedZone = hostedZonesRes.HostedZones.find(
-    // Name has a period at the end, so we're using includes rather than equals
-    (zone) => zone.Name.includes(params.nakedDomain)
-  )
-
-  return hostedZone ? hostedZone.Id.replace('/hostedzone/', '') : null
-}
-
-const shouldConfigureNakedDomain = (domain) => {
-  if (!domain) {
-    return false
-  }
-  if (domain.startsWith('www') && domain.split('.').length === 3) {
-    return true
-  }
-  return false
-}
+const { getNakedDomain, shouldConfigureNakedDomain } = require('./utils')
+const getDomainHostedZoneId = require('./getDomainHostedZoneId')
 
 module.exports = async (aws, params = {}) => {
+  params.log = params.log || (() => {})
+  const { log } = params
   const { domain, distributionUrl } = params
-  const nakedDomain = getNakedDomain(params)
-  const domainHostedZoneId =
-    params.domainHostedZoneId || (await getDomainHostedZoneId(aws, { nakedDomain }))
+  const nakedDomain = getNakedDomain(domain)
+  const domainHostedZoneId = params.domainHostedZoneId || (await getDomainHostedZoneId(aws, params))
 
   const route53 = new aws.Route53()
+
+  log(`Configuring DNS records for domain "${domain}"`)
 
   const dnsRecordParams = {
     HostedZoneId: domainHostedZoneId,
@@ -56,6 +33,7 @@ module.exports = async (aws, params = {}) => {
   }
 
   if (shouldConfigureNakedDomain(domain)) {
+    log(`Configuring DNS records for domain "${nakedDomain}"`)
     dnsRecordParams.ChangeBatch.Changes.push({
       Action: 'UPSERT',
       ResourceRecordSet: {
@@ -70,5 +48,7 @@ module.exports = async (aws, params = {}) => {
     })
   }
 
-  return route53.changeResourceRecordSets(dnsRecordParams).promise()
+  await route53.changeResourceRecordSets(dnsRecordParams).promise()
+
+  return { domainHostedZoneId }
 }

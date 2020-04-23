@@ -1,23 +1,5 @@
-const sleep = async (wait) => new Promise((resolve) => setTimeout(() => resolve(), wait))
-
-const getNakedDomain = ({ domain }) => {
-  const domainParts = domain.split('.')
-  const topLevelDomainPart = domainParts[domainParts.length - 1]
-  const secondLevelDomainPart = domainParts[domainParts.length - 2]
-  return `${secondLevelDomainPart}.${topLevelDomainPart}`
-}
-
-const getDomainHostedZoneId = async (aws, params = {}) => {
-  const route53 = new aws.Route53()
-  const hostedZonesRes = await route53.listHostedZonesByName().promise()
-
-  const hostedZone = hostedZonesRes.HostedZones.find(
-    // Name has a period at the end, so we're using includes rather than equals
-    (zone) => zone.Name.includes(params.nakedDomain)
-  )
-
-  return hostedZone ? hostedZone.Id.replace('/hostedzone/', '') : null
-}
+const { sleep, getNakedDomain } = require('./utils')
+const getDomainHostedZoneId = require('./getDomainHostedZoneId')
 
 const getCertificateArnByDomain = async (acm, nakedDomain) => {
   const listRes = await acm.listCertificates().promise()
@@ -36,16 +18,16 @@ const getCertificateValidationRecord = (certificate, domain) => {
   return domainValidationOption.ResourceRecord
 }
 
-const describeCertificateByArn = async (acm, certificateArn, domain) => {
+const describeCertificateByArn = async (acm, certificateArn, nakedDomain) => {
   const res = await acm.describeCertificate({ CertificateArn: certificateArn }).promise()
   const certificate = res && res.Certificate ? res.Certificate : null
 
   if (
     certificate.Status === 'PENDING_VALIDATION' &&
-    !getCertificateValidationRecord(certificate, domain)
+    !getCertificateValidationRecord(certificate, nakedDomain)
   ) {
     await sleep(1000)
-    return describeCertificateByArn(acm, certificateArn, domain)
+    return describeCertificateByArn(acm, certificateArn, nakedDomain)
   }
 
   return certificate
@@ -54,14 +36,14 @@ const describeCertificateByArn = async (acm, certificateArn, domain) => {
 module.exports = async (aws, params = {}) => {
   params.log = params.log || (() => {})
   const { log } = params
-  const nakedDomain = getNakedDomain(params)
+  const nakedDomain = getNakedDomain(params.domain)
   const wildcardSubDomain = `*.${nakedDomain}`
-  const domainHostedZoneId = await getDomainHostedZoneId(aws, { nakedDomain })
+  const { domainHostedZoneId } = await getDomainHostedZoneId(aws, params)
 
   const acm = new aws.ACM()
   const route53 = new aws.Route53()
 
-  const params = {
+  const certificateParams = {
     DomainName: nakedDomain,
     SubjectAlternativeNames: [nakedDomain, wildcardSubDomain],
     ValidationMethod: 'DNS'
@@ -72,10 +54,10 @@ module.exports = async (aws, params = {}) => {
 
   if (!certificateArn) {
     log(`Certificate for the ${nakedDomain} domain does not exist. Creating...`)
-    certificateArn = (await acm.requestCertificate(params).promise()).CertificateArn
+    certificateArn = (await acm.requestCertificate(certificateParams).promise()).CertificateArn
   }
 
-  const certificate = await describeCertificateByArn(aws, params)
+  const certificate = await describeCertificateByArn(acm, certificateArn, nakedDomain)
 
   log(`Certificate for ${nakedDomain} is in a "${certificate.Status}" status`)
 
@@ -125,7 +107,7 @@ module.exports = async (aws, params = {}) => {
 
   return {
     domainHostedZoneId,
-    arn: certificateArn,
-    status: certificate.Status
+    certificateArn,
+    certificateStatus: certificate.Status
   }
 }
