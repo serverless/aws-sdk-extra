@@ -24,6 +24,8 @@ const s3 = new aws.S3()
 - [addDomainToDistribution](#addDomainToDistribution)
 - [getDomainHostedZoneId](#getDomainHostedZoneId)
 - [updateOrCreateRole](#updateOrCreateRole)
+- [deleteRole](#deleteRole)
+- [deleteRolePolicies](#deleteRolePolicies)
 
 # deployDistributionDomain
 
