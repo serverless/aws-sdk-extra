@@ -55,4 +55,34 @@ aws.utils.getDomainHostedZoneId = (params) => require('./getDomainHostedZoneId')
  */
 aws.utils.addDomainToDistribution = (params) => require('./addDomainToDistribution')(aws, params)
 
+/*
+ * Updates or creates the given role name with the given service & policy
+ *
+ *
+ * @param {name} String - The name of the role
+ * @param {service} String/Array - The service that will assume this role. Default is lambda.
+ * @param {policy} String/Array - The managed policy arn as a string, or an array of inline policy statements
+ *
+ * @returns {roleArn} String - The arn of the created/update role
+ */
+aws.utils.updateOrCreateRole = (params) => require('./updateOrCreateRole')(aws, params)
+
+/*
+ * Deletes the given role and all its attached managed and inline policies
+ *
+ *
+ * @param {name} String - The name of the role to delete
+ *
+ */
+aws.utils.deleteRole = (params) => require('./deleteRole')(aws, params)
+
+/*
+ * Deletes all attached managed and inline policies for the given role
+ *
+ *
+ * @param {name} String - The name of the role to delete policies from
+ *
+ */
+aws.utils.deleteRolePolicies = (params) => require('./deleteRolePolicies')(aws, params)
+
 module.exports = aws

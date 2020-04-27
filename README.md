@@ -23,6 +23,7 @@ const s3 = new aws.S3()
 - [deployDistributionDns](#deployDistributionDns)
 - [addDomainToDistribution](#addDomainToDistribution)
 - [getDomainHostedZoneId](#getDomainHostedZoneId)
+- [updateOrCreateRole](#updateOrCreateRole)
 
 # deployDistributionDomain
 
@@ -86,4 +87,65 @@ const params = {
 }
 
 const { domainHostedZoneId } = await aws.utils.getDomainHostedZoneId(params)
+```
+
+# updateOrCreateRole
+
+Updates or creates the given role name with the given service & policy. You can specify an inline policy:
+
+```js
+const params = {
+  name: 'my-role',
+  service: 'lambda.amazonaws.com',
+  policy: [
+    {
+      Effect: 'Allow',
+      Action: ['sts:AssumeRole'],
+      Resource: '*'
+    },
+    {
+      Effect: 'Allow',
+      Action: ['logs:CreateLogGroup', 'logs:CreateLogStream'],
+      Resource: '*'
+    }
+  ]
+}
+const { roleArn } = await aws.utils.updateOrCreateRole(params)
+```
+
+Or you can specify the policy as a maanged policy arn string:
+
+```js
+const params = {
+  name: 'my-role',
+  service: 'lambda.amazonaws.com',
+  policy: 'arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole'
+}
+const { roleArn } = await aws.utils.updateOrCreateRole(params)
+```
+
+If you don't specify a policy property, an admin policy will be created by default.
+
+# deleteRole
+
+Deletes the given role and all its attached managed and inline policies.
+
+```js
+const params = {
+  name: 'my-role'
+}
+
+await aws.utils.deleteRole(params)
+```
+
+# deleteRolePolicies
+
+Deletes all attached managed and inline policies for the given role.
+
+```js
+const params = {
+  name: 'my-role'
+}
+
+await aws.utils.deleteRolePolicies(params)
 ```
