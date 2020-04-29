@@ -2,18 +2,17 @@
 The aws sdk + powerful high-level serverless utilities.
 
 ```js
-// 1. require the serverless aws sdk.
+// require the serverless aws sdk.
 const aws = require(`@serverless/aws-sdk`)
 
-// 2. set credentials globally for all services as usual.
+// set credentials, as usual.
 aws.config.update({ credentials: { accessKeyId: 'xxx', secretAccessKey: 'xxx' }, region: 'us-east-1' })
 
-// 3. use some powerful utilities. More info below.
-const certificate = await aws.utils.deployCertificate(params)
-
-// 4. this is the typical aws sdk. Do whatever else you want.
+// use any service, as usual.
 const s3 = new aws.S3()
 
+// use some powerful utilities. More info below.
+const certificate = await aws.utils.deployCertificate(params)
 ```
 
 # Reference
