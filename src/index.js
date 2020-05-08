@@ -85,4 +85,32 @@ aws.utils.deleteRole = (params) => require('./deleteRole')(aws, params)
  */
 aws.utils.deleteRolePolicies = (params) => require('./deleteRolePolicies')(aws, params)
 
+/*
+ * Updates a lambda if it exists, otherwise creates a new one.
+ *
+ *
+ * @param {lambdaName} String - required - The name of the targeted lambda
+ * @param {roleArn} String - required - The role arn you'd like the lambda to assume
+ * @param {lambdaSrc} String/Buffer - required - The source code of the lambda either as a path to a directory or a buffer
+ *
+ * @returns {lambdaArn} String - The ARN of the updated/created lambda
+ * @returns {lambdaSize} Number - The code size of the update/created lambda
+ * @returns {lambdaSha} String - The sha hash of the update/created lambda
+ *
+ */
+aws.utils.updateOrCreateLambda = (params) => require('./updateOrCreateLambda')(aws, params)
+
+/*
+ * Deploys the DNS records for an Api Gateway V2 HTTP custom domain
+ *
+ *
+ * @param {domain} String - required - The domain name you'd like to configure.
+ * @param {apigatewayHostedZoneId} String - required - The regional hosted zone id of the APIG custom domain.
+ * @param {apigatewayDomainName} String - required - The regional endpoint of the APIG custom domain.
+ *
+ * @returns {domainHostedZoneId} String - The hosted zone id of the provided domain
+ *
+ */
+aws.utils.deployApigDomainDns = (params) => require('./deployApigDomainDns')(aws, params)
+
 module.exports = aws

@@ -1,3 +1,5 @@
+const AdmZip = require('adm-zip')
+
 const sleep = async (wait) => new Promise((resolve) => setTimeout(() => resolve(), wait))
 
 const getNakedDomain = (domain) => {
@@ -17,4 +19,14 @@ const shouldConfigureNakedDomain = (domain) => {
   return false
 }
 
-module.exports = { sleep, getNakedDomain, shouldConfigureNakedDomain }
+const zip = (dirPath) => {
+  const zipper = new AdmZip()
+
+  zipper.addLocalFolder(dirPath)
+
+  const zipFile = zipper.toBuffer()
+
+  return zipFile
+}
+
+module.exports = { sleep, zip, getNakedDomain, shouldConfigureNakedDomain }

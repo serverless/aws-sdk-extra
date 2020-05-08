@@ -1,17 +1,21 @@
 # Serverless AWS SDK
-The aws sdk + powerful high-level serverless utilities.
+
+The aws sdk + powerful high-level serverless utils.
 
 ```js
 // require the serverless aws sdk.
 const aws = require(`@serverless/aws-sdk`)
 
 // set credentials, as usual.
-aws.config.update({ credentials: { accessKeyId: 'xxx', secretAccessKey: 'xxx' }, region: 'us-east-1' })
+aws.config.update({
+  credentials: { accessKeyId: 'xxx', secretAccessKey: 'xxx' },
+  region: 'us-east-1'
+})
 
 // use any service, as usual.
 const s3 = new aws.S3()
 
-// use some powerful utilities. More info below.
+// use some powerful utils. More info below.
 const certificate = await aws.utils.deployCertificate(params)
 ```
 
@@ -25,6 +29,7 @@ const certificate = await aws.utils.deployCertificate(params)
 - [updateOrCreateRole](#updateOrCreateRole)
 - [deleteRole](#deleteRole)
 - [deleteRolePolicies](#deleteRolePolicies)
+- [updateOrCreateLambda](#updateOrCreateLambda)
 
 # deployDistributionDomain
 
@@ -36,7 +41,11 @@ const params = {
   distributionId: 'xxx'
 }
 
-const { certificateArn, certificateStatus, domainHostedZoneId } = await aws.utils.deployDistributionDomain(params)
+const {
+  certificateArn,
+  certificateStatus,
+  domainHostedZoneId
+} = await aws.utils.deployDistributionDomain(params)
 ```
 
 # deployCertificate
@@ -45,10 +54,12 @@ Deploys a free ACM certificate for the given domain.
 
 ```js
 const params = {
-  domain: 'serverless.com',
+  domain: 'serverless.com'
 }
 
-const { certificateArn, certificateStatus, domainHostedZoneId } = await aws.utils.deployCertificate(params)
+const { certificateArn, certificateStatus, domainHostedZoneId } = await aws.utils.deployCertificate(
+  params
+)
 ```
 
 # deployDistributionDns
@@ -72,7 +83,7 @@ Adds a domain or subdomain to a CloudFront Distribution.
 const params = {
   domain: 'serverless.com',
   certificateArn: 'xxx:xxx',
-  certificateStatus: 'ISSUED',
+  certificateStatus: 'ISSUED'
 }
 
 const { domainHostedZoneId } = await aws.utils.addDomainToDistribution(params)
@@ -149,4 +160,33 @@ const params = {
 }
 
 await aws.utils.deleteRolePolicies(params)
+```
+
+# updateOrCreateLambda
+
+Updates a lambda if it exists, otherwise creates a new one.
+
+```js
+const lambdaParams = {
+  lambdaName: 'my-lambda', // required
+  roleArn: 'aws:iam:role:arn:xxx', // required
+  lambdaSrc: 'path/to/lambda/directory' // required. could also be a buffer of a zip file
+  memory: 512 // optional, along with the other lambda config
+}
+
+const { lambdaArn, lambdaSize, lambdaSha } = await aws.utils.updateOrCreateLambda(params)
+```
+
+# deployApigDomainDns
+
+Deploys the DNS records for an Api Gateway V2 HTTP custom domain
+
+```js
+const lambdaParams = {
+  domain: 'serverless.com', // required. The custom domain you'd like to configure.
+  apigatewayHostedZoneId: 'qwertyuiop', // required. The regional hosted zone id of the APIG custom domain
+  apigatewayDomainName: 'd-qwertyuiop.xxx.com' // required. The regional endpoint of the APIG custom domain
+}
+
+const { domainHostedZoneId } = await aws.utils.updateOrCreateLambda(params)
 ```

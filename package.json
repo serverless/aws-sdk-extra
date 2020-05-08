@@ -9,6 +9,7 @@
     "access": "public"
   },
   "dependencies": {
+    "adm-zip": "^0.4.14",
     "aws-sdk": "^2.614.0",
     "ramda": "^0.26.1"
   },
