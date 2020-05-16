@@ -188,5 +188,5 @@ const lambdaParams = {
   apigatewayDomainName: 'd-qwertyuiop.xxx.com' // required. The regional endpoint of the APIG custom domain
 }
 
-const { domainHostedZoneId } = await aws.utils.updateOrCreateLambda(params)
+const { domainHostedZoneId } = await aws.utils.deployApigDomainDns(params)
 ```

@@ -12,12 +12,21 @@ const updateOrCreateLambda = async (aws, params = {}) => {
       throw new Error(`Missing roleArn param.`)
     }
 
+    // todo support src as string and create zip on the fly without access to fs
     if (!params.lambdaSrc) {
       throw new Error(`Missing lambdaSrc param.`)
     }
 
-    if (typeof params.lambdaSrc === 'string' && fs.lstatSync(params.lambdaSrc).isDirectory()) {
-      params.lambdaSrc = zip(params.lambdaSrc)
+    // validate lambdaSrc is path to zip, path to dir, or buffer
+    if (typeof params.lambdaSrc === 'string') {
+      if (fs.lstatSync(params.lambdaSrc).isDirectory()) {
+        // path to directory
+        params.lambdaSrc = zip(params.lambdaSrc)
+      } else {
+        // path to zip file
+        // todo validate it's a path to zip file
+        params.lambdaSrc = await fs.promises.readFile(params.lambdaSrc)
+      }
     }
 
     const lambda = new aws.Lambda()
@@ -42,7 +51,7 @@ const updateOrCreateLambda = async (aws, params = {}) => {
       const updateFunctionCodeParams = {
         FunctionName: params.lambdaName, // required
         ZipFile: params.lambdaSrc, // required
-        Publish: params.publish === false ? false : true
+        Publish: params.publish === true ? true : false
       }
 
       const lambdaRes = await lambda.updateFunctionCode(updateFunctionCodeParams).promise()
@@ -71,7 +80,7 @@ const updateOrCreateLambda = async (aws, params = {}) => {
         Timeout: params.timeout || 300,
         Layers: params.layers || [],
         Runtime: params.runtime || 'nodejs12.x',
-        Publish: params.publish === false ? false : true
+        Publish: params.publish === true ? true : false
       }
 
       const lambdaRes = await lambda.createFunction(createFunctionParams).promise()

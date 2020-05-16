@@ -3,12 +3,12 @@ module.exports = async (aws, params = {}) => {
 
   const { AttachedPolicies: managedPolicies } = await iam
     .listAttachedRolePolicies({
-      RoleName: params.name
+      RoleName: params.roleName
     })
     .promise()
   const { PolicyNames: inlinePoliciesNames } = await iam
     .listRolePolicies({
-      RoleName: params.name
+      RoleName: params.roleName
     })
     .promise()
 
@@ -18,7 +18,7 @@ module.exports = async (aws, params = {}) => {
   for (const managedPolicy of managedPolicies) {
     const detachRolePolicyParams = {
       PolicyArn: managedPolicy.PolicyArn,
-      RoleName: params.name
+      RoleName: params.roleName
     }
 
     promises.push(iam.detachRolePolicy(detachRolePolicyParams).promise())
@@ -28,7 +28,7 @@ module.exports = async (aws, params = {}) => {
   for (const inlinePolicyName of inlinePoliciesNames) {
     const deleteRolePolicyParams = {
       PolicyName: inlinePolicyName,
-      RoleName: params.name
+      RoleName: params.roleName
     }
 
     promises.push(iam.deleteRolePolicy(deleteRolePolicyParams).promise())

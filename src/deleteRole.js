@@ -8,7 +8,7 @@ module.exports = async (aws, params = {}) => {
 
     await iam
       .deleteRole({
-        RoleName: params.name
+        RoleName: params.roleName
       })
       .promise()
   } catch (error) {

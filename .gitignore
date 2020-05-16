@@ -24,4 +24,4 @@ env.js
 tmp
 package-lock.json
 yarn.lock
-test
+tests

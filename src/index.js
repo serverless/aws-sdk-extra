@@ -65,7 +65,7 @@ aws.utils.addDomainToDistribution = (params) => require('./addDomainToDistributi
  *
  * @returns {roleArn} String - The arn of the created/update role
  */
-aws.utils.updateOrCreateRole = (params) => require('./updateOrCreateRole')(aws, params)
+aws.utils.deployRole = (params) => require('./deployRole')(aws, params)
 
 /*
  * Deletes the given role and all its attached managed and inline policies
@@ -98,7 +98,7 @@ aws.utils.deleteRolePolicies = (params) => require('./deleteRolePolicies')(aws, 
  * @returns {lambdaSha} String - The sha hash of the update/created lambda
  *
  */
-aws.utils.updateOrCreateLambda = (params) => require('./updateOrCreateLambda')(aws, params)
+aws.utils.deployLambda = (params) => require('./deployLambda')(aws, params)
 
 /*
  * Deploys the DNS records for an Api Gateway V2 HTTP custom domain
@@ -112,5 +112,18 @@ aws.utils.updateOrCreateLambda = (params) => require('./updateOrCreateLambda')(a
  *
  */
 aws.utils.deployApigDomainDns = (params) => require('./deployApigDomainDns')(aws, params)
+
+// todo document
+aws.utils.deployAppSyncApi = (params) => require('./deployAppSyncApi')(aws, params)
+aws.utils.deployAppSyncSchema = (params) => require('./deployAppSyncSchema')(aws, params)
+aws.utils.deployAppSyncDataSource = (params) => require('./deployAppSyncDataSource')(aws, params)
+aws.utils.deployAppSyncResolvers = (params) => require('./deployAppSyncResolvers')(aws, params)
+aws.utils.createAppSyncApiKey = (params) => require('./createAppSyncApiKey')(aws, params)
+aws.utils.getAccountId = (params) => require('./getAccountId')(aws, params)
+aws.utils.getLambdaArn = (params) => require('./getLambdaArn')(aws, params)
+aws.utils.getCloudWatchLogGroupArn = (params) => require('./getCloudWatchLogGroupArn')(aws, params)
+aws.utils.deleteLambda = (params) => require('./deleteLambda')(aws, params)
+aws.utils.deleteAppSyncApi = (params) => require('./deleteAppSyncApi')(aws, params)
+aws.utils.deployAppSyncApiKey = (params) => require('./deployAppSyncApiKey')(aws, params)
 
 module.exports = aws

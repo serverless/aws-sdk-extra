@@ -10,7 +10,7 @@ const updateRolePolicy = async (aws, params = {}) => {
     // policy is an arn of a managed policy
     await iam
       .attachRolePolicy({
-        RoleName: params.name,
+        RoleName: params.roleName,
         PolicyArn: params.policy
       })
       .promise()
@@ -22,8 +22,8 @@ const updateRolePolicy = async (aws, params = {}) => {
     }
     await iam
       .putRolePolicy({
-        RoleName: params.name,
-        PolicyName: params.name,
+        RoleName: params.roleName,
+        PolicyName: params.roleName,
         PolicyDocument: JSON.stringify(policyDocument)
       })
       .promise()
@@ -35,7 +35,7 @@ const updateRolePolicy = async (aws, params = {}) => {
 const updateRole = async (aws, params = {}) => {
   const iam = new aws.IAM()
 
-  const res = await iam.getRole({ RoleName: params.name }).promise()
+  const res = await iam.getRole({ RoleName: params.roleName }).promise()
 
   const assumeRolePolicyDocument = {
     Version: '2012-10-17',
@@ -50,7 +50,7 @@ const updateRole = async (aws, params = {}) => {
 
   await iam
     .updateAssumeRolePolicy({
-      RoleName: params.name,
+      RoleName: params.roleName,
       PolicyDocument: JSON.stringify(assumeRolePolicyDocument)
     })
     .promise()
@@ -74,7 +74,7 @@ const createRole = async (aws, params = {}) => {
   }
   const res = await iam
     .createRole({
-      RoleName: params.name,
+      RoleName: params.roleName,
       Path: '/',
       AssumeRolePolicyDocument: JSON.stringify(assumeRolePolicyDocument)
     })
@@ -86,8 +86,8 @@ const createRole = async (aws, params = {}) => {
 }
 
 module.exports = async (aws, params = {}) => {
-  if (!params.name) {
-    throw new Error(`Missing role name.`)
+  if (!params.roleName) {
+    throw new Error(`Missing "roleName" param.`)
   }
 
   params.service = params.service || 'lambda.amazonaws.com'
