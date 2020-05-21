@@ -1,10 +1,44 @@
+const setAuthConfig = (aws, params, createUpdateParams) => {
+  if (!params.auth || params.auth === 'apiKey') {
+    // api key auth
+    createUpdateParams.authenticationType = 'API_KEY'
+  } else if (params.auth === 'awsIam') {
+    // iam auth
+    createUpdateParams.authenticationType = 'AWS_IAM'
+  } else if (params.auth.userPoolId) {
+    createUpdateParams.authenticationType = 'AMAZON_COGNITO_USER_POOLS'
+    createUpdateParams.userPoolConfig = {
+      // cognito auth config
+      userPoolId: params.auth.userPoolId,
+      defaultAction: params.auth.defaultAction || 'ALLOW',
+      awsRegion: params.auth.region || aws.config.region,
+      appIdClientRegex: params.auth.appIdClientRegex
+    }
+  } else if (params.auth.issuer) {
+    // open id auth config
+    createUpdateParams.openIDConnectConfig = {
+      // cognito auth config
+      issuer: params.auth.issuer,
+      authTTL: params.auth.authTTL,
+      clientId: params.auth.clientId,
+      iatTTL: params.auth.iatTTL
+    }
+  } else {
+    // set api key for any other case
+    createUpdateParams.authenticationType = 'API_KEY'
+  }
+
+  return createUpdateParams
+}
+
 const createAppSyncApi = async (aws, params) => {
   const appSync = new aws.AppSync()
 
-  const createGraphqlApiParams = {
-    name: params.apiName,
-    authenticationType: params.authenticationType || 'API_KEY'
+  let createGraphqlApiParams = {
+    name: params.apiName
   }
+
+  createGraphqlApiParams = setAuthConfig(aws, params, createGraphqlApiParams)
 
   const { graphqlApi } = await appSync.createGraphqlApi(createGraphqlApiParams).promise()
 
@@ -14,11 +48,12 @@ const createAppSyncApi = async (aws, params) => {
 const updateAppSyncApi = async (aws, params) => {
   const appSync = new aws.AppSync()
 
-  const updateGraphqlApiparams = {
+  let updateGraphqlApiparams = {
     apiId: params.apiId,
-    name: params.apiName,
-    authenticationType: params.authenticationType || 'API_KEY'
+    name: params.apiName
   }
+
+  updateGraphqlApiparams = setAuthConfig(aws, params, updateGraphqlApiparams)
 
   const { graphqlApi } = await appSync.updateGraphqlApi(updateGraphqlApiparams).promise()
 

@@ -1,4 +1,5 @@
 const AdmZip = require('adm-zip')
+const mergeDeep = require('merge-deep')
 
 const sleep = async (wait) => new Promise((resolve) => setTimeout(() => resolve(), wait))
 
@@ -29,4 +30,4 @@ const zip = (dirPath) => {
   return zipFile
 }
 
-module.exports = { sleep, zip, getNakedDomain, shouldConfigureNakedDomain }
+module.exports = { mergeDeep, sleep, zip, getNakedDomain, shouldConfigureNakedDomain }

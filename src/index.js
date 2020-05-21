@@ -125,5 +125,10 @@ aws.utils.getCloudWatchLogGroupArn = (params) => require('./getCloudWatchLogGrou
 aws.utils.deleteLambda = (params) => require('./deleteLambda')(aws, params)
 aws.utils.deleteAppSyncApi = (params) => require('./deleteAppSyncApi')(aws, params)
 aws.utils.deployAppSyncApiKey = (params) => require('./deployAppSyncApiKey')(aws, params)
+aws.utils.deployAppSyncDistribution = (params) =>
+  require('./deployAppSyncDistribution')(aws, params)
+aws.utils.deployDistribution = (params) => require('./deployDistribution')(aws, params)
+aws.utils.disableDistribution = (params) => require('./disableDistribution')(aws, params)
+aws.utils.removeDistribution = (params) => require('./removeDistribution')(aws, params)
 
 module.exports = aws
