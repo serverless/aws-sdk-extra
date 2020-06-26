@@ -1,15 +1,11 @@
 const getAccountId = require('./getAccountId')
 
 module.exports = async (aws, params) => {
-  if (!params.region) {
-    params.region = aws.config.region
-  }
-
   if (!params.accountId) {
     params.accountId = await getAccountId(aws)
   }
 
-  const arn = `arn:aws:lambda:${params.region}:${params.accountId}:function:${params.lambdaName}`
+  const arn = `arn:aws:iam::${params.accountId}:role/${params.roleName}`
 
   return arn
 }

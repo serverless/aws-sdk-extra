@@ -9,7 +9,7 @@ module.exports = async (aws, params) => {
     params.accountId = await getAccountId(aws)
   }
 
-  const arn = `arn:aws:lambda:${params.region}:${params.accountId}:function:${params.lambdaName}`
+  const arn = `arn:aws:dynamodb:${params.region}:${params.accountId}:table/${params.tableName}`
 
   return arn
 }

@@ -116,11 +116,16 @@ aws.utils.deployApigDomainDns = (params) => require('./deployApigDomainDns')(aws
 // todo document
 aws.utils.deployAppSyncApi = (params) => require('./deployAppSyncApi')(aws, params)
 aws.utils.deployAppSyncSchema = (params) => require('./deployAppSyncSchema')(aws, params)
-aws.utils.deployAppSyncDataSource = (params) => require('./deployAppSyncDataSource')(aws, params)
 aws.utils.deployAppSyncResolvers = (params) => require('./deployAppSyncResolvers')(aws, params)
+aws.utils.getAppSyncResolversPolicy = (params) =>
+  require('./getAppSyncResolversPolicy')(aws, params)
 aws.utils.createAppSyncApiKey = (params) => require('./createAppSyncApiKey')(aws, params)
 aws.utils.getAccountId = (params) => require('./getAccountId')(aws, params)
 aws.utils.getLambdaArn = (params) => require('./getLambdaArn')(aws, params)
+aws.utils.getRoleArn = (params) => require('./getRoleArn')(aws, params)
+aws.utils.getTableArn = (params) => require('./getTableArn')(aws, params)
+aws.utils.getElasticSearchArn = (params) => require('./getElasticSearchArn')(aws, params)
+aws.utils.getRdsArn = (params) => require('./getRdsArn')(aws, params)
 aws.utils.getCloudWatchLogGroupArn = (params) => require('./getCloudWatchLogGroupArn')(aws, params)
 aws.utils.deleteLambda = (params) => require('./deleteLambda')(aws, params)
 aws.utils.deleteAppSyncApi = (params) => require('./deleteAppSyncApi')(aws, params)

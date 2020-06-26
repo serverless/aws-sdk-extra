@@ -2,7 +2,7 @@ const setAuthConfig = (aws, params, createUpdateParams) => {
   if (!params.auth || params.auth === 'apiKey') {
     // api key auth
     createUpdateParams.authenticationType = 'API_KEY'
-  } else if (params.auth === 'awsIam') {
+  } else if (params.auth === 'awsIam' || params.auth === 'iam') {
     // iam auth
     createUpdateParams.authenticationType = 'AWS_IAM'
   } else if (params.auth.userPoolId) {
