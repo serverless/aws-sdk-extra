@@ -1,6 +1,21 @@
 const fs = require('fs')
 const { sleep, zip } = require('./utils')
 
+
+const getVpcConfig = (vpcConfig) => {
+  if (vpcConfig == 'undefined' || vpcConfig == null) {
+    return {
+      SecurityGroupIds: [],
+      SubnetIds: []
+    }
+  }
+
+  return {
+    SecurityGroupIds: vpcConfig.securityGroupIds,
+    SubnetIds: vpcConfig.subnetIds
+  }
+}
+
 const updateOrCreateLambda = async (aws, params = {}) => {
   try {
     if (!params.lambdaName) {
@@ -31,6 +46,8 @@ const updateOrCreateLambda = async (aws, params = {}) => {
 
     const lambda = new aws.Lambda()
 
+    const vpcConfig = getVpcConfig(params.vpcConfig)
+
     try {
       const updateFunctionConfigurationParams = {
         FunctionName: params.lambdaName, // required
@@ -43,10 +60,14 @@ const updateOrCreateLambda = async (aws, params = {}) => {
         Runtime: params.runtime || 'nodejs12.x',
         Environment: {
           Variables: params.env || {}
-        }
+        },
+        VpcConfig: vpcConfig
       }
 
       await lambda.updateFunctionConfiguration(updateFunctionConfigurationParams).promise()
+
+      // Updates (like vpc changes) need to complete before calling updateFunctionCode
+      await lambda.waitFor('functionUpdated', { FunctionName: params.lambdaName }).promise()
 
       const updateFunctionCodeParams = {
         FunctionName: params.lambdaName, // required
@@ -80,7 +101,8 @@ const updateOrCreateLambda = async (aws, params = {}) => {
         Timeout: params.timeout || 300,
         Layers: params.layers || [],
         Runtime: params.runtime || 'nodejs12.x',
-        Publish: params.publish === true ? true : false
+        Publish: params.publish === true ? true : false,
+        VpcConfig: vpcConfig
       }
 
       const lambdaRes = await lambda.createFunction(createFunctionParams).promise()
