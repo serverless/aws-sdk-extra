@@ -172,6 +172,12 @@ const lambdaParams = {
   roleArn: 'aws:iam:role:arn:xxx', // required
   lambdaSrc: 'path/to/lambda/directory' // required. could also be a buffer of a zip file
   memory: 512 // optional, along with the other lambda config
+  vpcConfig: // optional, specify a VPC
+    securityGroupIds:
+      - sg-xxx
+    subnetIds:
+      - subnet-xxx
+      - subnet-xxx
 }
 
 const { lambdaArn, lambdaSize, lambdaSha } = await aws.utils.updateOrCreateLambda(params)
