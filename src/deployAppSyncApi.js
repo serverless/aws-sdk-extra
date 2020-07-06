@@ -15,6 +15,7 @@ const setAuthConfig = (aws, params, createUpdateParams) => {
       appIdClientRegex: params.auth.appIdClientRegex
     }
   } else if (params.auth.issuer) {
+    createUpdateParams.authenticationType = 'OPENID_CONNECT'
     // open id auth config
     createUpdateParams.openIDConnectConfig = {
       // cognito auth config
