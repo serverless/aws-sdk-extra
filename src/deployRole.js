@@ -1,10 +1,10 @@
-const deleteRolePolicies = require('./deleteRolePolicies')
+const removeRolePolicies = require('./removeRolePolicies')
 
 const updateRolePolicy = async (aws, params = {}) => {
   const iam = new aws.IAM()
 
   // clear previously deployed policy arns if any
-  await deleteRolePolicies(aws, params)
+  await removeRolePolicies(aws, params)
 
   if (typeof params.policy === 'string') {
     // policy is an arn of a managed policy

@@ -1,10 +1,10 @@
-const deleteRolePolicies = require('./deleteRolePolicies')
+const removeRolePolicies = require('./removeRolePolicies')
 
 module.exports = async (aws, params = {}) => {
   const iam = new aws.IAM()
 
   try {
-    await deleteRolePolicies(aws, params)
+    await removeRolePolicies(aws, params)
 
     await iam
       .deleteRole({

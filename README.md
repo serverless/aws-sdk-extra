@@ -26,10 +26,14 @@ const certificate = await aws.utils.deployCertificate(params)
 - [deployDistributionDns](#deployDistributionDns)
 - [addDomainToDistribution](#addDomainToDistribution)
 - [getDomainHostedZoneId](#getDomainHostedZoneId)
-- [updateOrCreateRole](#updateOrCreateRole)
-- [deleteRole](#deleteRole)
-- [deleteRolePolicies](#deleteRolePolicies)
-- [updateOrCreateLambda](#updateOrCreateLambda)
+- [deployRole](#deployRole)
+- [removeRole](#removeRole)
+- [removeRolePolicies](#removeRolePolicies)
+- [deployLambda](#deployLambda)
+- [deployApigDomainDns](#deployApigDomainDns)
+- [deployAppSyncApi](#deployAppSyncApi)
+- [deployAppSyncSchema](#deployAppSyncSchema)
+- [deployAppSyncResolvers](#deployAppSyncResolvers)
 
 # deployDistributionDomain
 
@@ -101,7 +105,7 @@ const params = {
 const { domainHostedZoneId } = await aws.utils.getDomainHostedZoneId(params)
 ```
 
-# updateOrCreateRole
+# deployRole
 
 Updates or creates the given role name with the given service & policy. You can specify an inline policy:
 
@@ -122,7 +126,7 @@ const params = {
     }
   ]
 }
-const { roleArn } = await aws.utils.updateOrCreateRole(params)
+const { roleArn } = await aws.utils.deployRole(params)
 ```
 
 Or you can specify the policy as a maanged policy arn string:
@@ -133,36 +137,36 @@ const params = {
   service: 'lambda.amazonaws.com',
   policy: 'arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole'
 }
-const { roleArn } = await aws.utils.updateOrCreateRole(params)
+const { roleArn } = await aws.utils.deployRole(params)
 ```
 
 If you don't specify a policy property, an admin policy will be created by default.
 
-# deleteRole
+# removeRole
 
-Deletes the given role and all its attached managed and inline policies.
-
-```js
-const params = {
-  name: 'my-role'
-}
-
-await aws.utils.deleteRole(params)
-```
-
-# deleteRolePolicies
-
-Deletes all attached managed and inline policies for the given role.
+Removes the given role and all its attached managed and inline policies.
 
 ```js
 const params = {
   name: 'my-role'
 }
 
-await aws.utils.deleteRolePolicies(params)
+await aws.utils.removeRole(params)
 ```
 
-# updateOrCreateLambda
+# removeRolePolicies
+
+Removes all attached managed and inline policies for the given role.
+
+```js
+const params = {
+  name: 'my-role'
+}
+
+await aws.utils.removeRolePolicies(params)
+```
+
+# deployLambda
 
 Updates a lambda if it exists, otherwise creates a new one.
 
@@ -180,7 +184,7 @@ const lambdaParams = {
       - subnet-xxx
 }
 
-const { lambdaArn, lambdaSize, lambdaSha } = await aws.utils.updateOrCreateLambda(params)
+const { lambdaArn, lambdaSize, lambdaSha } = await aws.utils.deployLambda(params)
 ```
 
 # deployApigDomainDns
@@ -195,4 +199,55 @@ const lambdaParams = {
 }
 
 const { domainHostedZoneId } = await aws.utils.deployApigDomainDns(params)
+```
+
+# deployAppSyncApi
+
+Updates or creates an AppSync API
+
+```js
+const deployAppSyncApiParams = {
+  apiName: 'my-api',
+  apiId: 'xxx' // if provided, updates the API. If not provided, creates a new API
+}
+
+const { apiId, apiUrls } = await aws.utils.deployAppSyncApi(params)
+```
+
+# deployAppSyncSchema
+
+Updates or creates an AppSync Schema
+
+```js
+const deployAppSyncSchemaParams = {
+  apiId: 'xxx', // the targeted api id
+  schema: '...' // valid graphql schema
+}
+
+await aws.utils.deployAppSyncApi(params)
+```
+
+# deployAppSyncResolvers
+
+Updates or creates AppSync Resolvers
+
+```js
+const deployAppSyncResolversParams = {
+  apiId,
+  roleName: 'my-role', // name of the role that provides access for these resources to the required resources
+  resolvers: {
+    Query: {
+      getPost: {
+        lambda: 'getPost' // name of the lambda function to use as a resolver for the getPost field
+      }
+    },
+    Mutation: {
+      putPost: {
+        lambda: 'putPost'
+      }
+    }
+  }
+}
+
+await aws.utils.deployAppSyncResolvers(params)
 ```
