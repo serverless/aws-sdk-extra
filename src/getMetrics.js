@@ -16,8 +16,8 @@ module.exports = async (
    * Validate parameters
    */
 
-  rangeStart = rangeStart || moment().utc().toISOString()
-  rangeEnd = rangeEnd || moment().utc().subtract(1, 'days').toISOString()
+  rangeStart = rangeStart || moment.utc().toISOString()
+  rangeEnd = rangeEnd || moment.utc().subtract(1, 'days').toISOString()
   resources = resources || []
 
   // Ensure resources were submitted
@@ -142,8 +142,6 @@ module.exports = async (
     throw new Error(`Your AWS Cloudwatch query contains ${cloudwatchMetricQueries.length} queries, but Cloudwatch can only support up to 500 queries.`)
   }
 
-  console.log(cloudwatchMetricQueries)
-
   // Prepare CloudWatch queries
   const params = {
     StartTime: rangeStart.unix(),
@@ -185,19 +183,19 @@ module.exports = async (
       // Add data which Cloudwatch has returned by inspecting timestamps of CW's returned data
       // If a timestamp exists that matches one of the defaults, add it in.
       metric.xData.forEach((xVal, i2) => {
-        if (moment(xVal).isSame(cwVal)) {
+        if (moment.utc(xVal).isSame(cwVal)) {
           metric.yDataSets[0].yData[i2] = cwMetric.Values[i];
         }
       });
-
-      // Transform data
-      Object.keys(resourcesUsed).forEach((resourceType) => {
-        metric = resourceHandlers[resourceType].transforms(cwMetric, metric)
-      })
-
-      // Add to results
-      result.metrics.push(metric)
     });
+
+    // Transform data
+    Object.keys(resourcesUsed).forEach((resourceType) => {
+      metric = resourceHandlers[resourceType].transforms(cwMetric, metric)
+    })
+
+    // Add to results
+    result.metrics.push(metric)
   })
 
   return result;

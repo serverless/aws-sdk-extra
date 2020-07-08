@@ -1,6 +1,6 @@
 {
   "name": "@serverless/aws-sdk",
-  "version": "6.1.1",
+  "version": "6.1.2",
   "description": "Powerful Serverless Utilities",
   "main": "src/index.js",
   "author": "Serverless, Inc.",
