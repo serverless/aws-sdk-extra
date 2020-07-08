@@ -1,6 +1,6 @@
 {
   "name": "@serverless/aws-sdk",
-  "version": "6.0.0",
+  "version": "6.1.1",
   "description": "Powerful Serverless Utilities",
   "main": "src/index.js",
   "author": "Serverless, Inc.",
@@ -12,6 +12,7 @@
     "adm-zip": "^0.4.14",
     "aws-sdk": "^2.614.0",
     "merge-deep": "^3.0.2",
+    "moment": "^2.27.0",
     "ramda": "^0.26.1"
   },
   "scripts": {

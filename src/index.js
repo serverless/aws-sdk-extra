@@ -107,6 +107,34 @@ aws.utils.getRdsArn = (params) => require('./getRdsArn')(aws, params)
  */
 aws.utils.getCloudWatchLogGroupArn = (params) => require('./getCloudWatchLogGroupArn')(aws, params)
 
+/**
+ * A convenience function to fetch useful metrics from AWS Cloudwatch for one or many AWS 
+ * resources (e.g. AWS HTTP API, AWS Lambda), and transform their resulting data into
+ * the standard format that is supported by Serverless Framework Component metrics.
+ * 
+ * @param {string} params.credentials AWS credentials
+ * @param {string} params.region AWS region
+ * @param {string} params.rangeStart ISO8601 timestamp for the start of the date range to query within
+ * @param {string} params.rangeEnd ISO8601 timestamp for the end of the date range to query within
+ * @param {array} params.resources An array containing objects representing AWS resources to query against.  View examples for supported resources.
+ * 
+ * @example
+ *
+ * // AWS HTTP API
+ * {
+ *   type: 'aws_http_api',
+ *   apiId: 'j0jafsasf',  
+ * }
+ * 
+ * // AWS Lambda
+ * {
+ *   type: 'aws_lambda',
+ *   functionName: 'myLambdaFunction',  
+ * }
+ *
+ */
+aws.utils.getMetrics = (params) => require('./getMetrics')(aws, params)
+
 /*
  * Removes a Lambda function. Does nothing if already removed.
  */
