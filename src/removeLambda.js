@@ -1,5 +1,7 @@
-module.exports = async (aws, params = {}) => {
-  const lambda = new aws.Lambda()
+const AWS = require('aws-sdk')
+
+module.exports = async (config, params = {}) => {
+  const lambda = new AWS.Lambda(config)
 
   // todo should we return if no lambdaName param
   try {

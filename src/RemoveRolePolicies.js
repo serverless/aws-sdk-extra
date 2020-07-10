@@ -1,5 +1,7 @@
-module.exports = async (aws, params = {}) => {
-  const iam = new aws.IAM()
+const AWS = require('aws-sdk')
+
+module.exports = async (config, params = {}) => {
+  const iam = new AWS.IAM(config)
 
   const { AttachedPolicies: managedPolicies } = await iam
     .listAttachedRolePolicies({

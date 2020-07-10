@@ -1,3 +1,4 @@
+const AWS = require('aws-sdk')
 const { sleep, getNakedDomain } = require('./utils')
 const getDomainHostedZoneId = require('./getDomainHostedZoneId')
 
@@ -33,15 +34,15 @@ const describeCertificateByArn = async (acm, certificateArn, nakedDomain) => {
   return certificate
 }
 
-module.exports = async (aws, params = {}) => {
-  params.log = params.log || (() => {})
+module.exports = async (config, params = {}) => {
+  params.log = params.log || (() => { })
   const { log } = params
   const nakedDomain = getNakedDomain(params.domain)
   const wildcardSubDomain = `*.${nakedDomain}`
-  const { domainHostedZoneId } = await getDomainHostedZoneId(aws, params)
+  const { domainHostedZoneId } = await getDomainHostedZoneId(config, params)
 
-  const acm = new aws.ACM()
-  const route53 = new aws.Route53()
+  const acm = new AWS.ACM(config)
+  const route53 = new AWS.Route53(config)
 
   const certificateParams = {
     DomainName: nakedDomain,

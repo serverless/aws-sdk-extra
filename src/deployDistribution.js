@@ -1,7 +1,10 @@
+const AWS = require('aws-sdk')
 const { mergeDeep } = require('./utils')
+const deployCertificate = require('./deployCertificate')
+const deployDistributionDns = require('./deployDistributionDns')
 
-const createDistribution = async (aws, params = {}) => {
-  const cf = new aws.CloudFront()
+const createDistribution = async (config, params = {}) => {
+  const cf = new AWS.CloudFront(config)
 
   delete params.distributionId
 
@@ -41,8 +44,9 @@ const createDistribution = async (aws, params = {}) => {
   }
 }
 
-const updateDistribution = async (aws, params = {}) => {
-  const cf = new aws.CloudFront()
+const updateDistribution = async (config, params = {}) => {
+  const cf = new AWS.CloudFront(config)
+
   try {
     const updateDistributionParams = await cf
       .getDistributionConfig({ Id: params.distributionId })
@@ -107,14 +111,14 @@ const updateDistribution = async (aws, params = {}) => {
     }
   } catch (e) {
     if (e.code === 'NoSuchDistribution') {
-      const res = await createDistribution(aws, params)
+      const res = await createDistribution(config, params)
       return res
     }
     throw e
   }
 }
 
-module.exports = async (aws, params = {}) => {
+module.exports = async (config, params = {}) => {
   const { domain } = params
 
   if (domain) {
@@ -122,7 +126,7 @@ module.exports = async (aws, params = {}) => {
       domain
     }
 
-    const res = await aws.utils.deployCertificate(deployCertificateParams)
+    const res = await deployCertificate(config, deployCertificateParams)
     params.certificateArn = res.certificateArn // eslint-disable-line
     params.domainHostedZoneId = res.domainHostedZoneId // eslint-disable-line
     params.certificateStatus = res.certificateStatus // eslint-disable-line
@@ -130,9 +134,9 @@ module.exports = async (aws, params = {}) => {
 
   let distribution
   if (params.distributionId) {
-    distribution = await updateDistribution(aws, params)
+    distribution = await updateDistribution(config, params)
   } else {
-    distribution = await createDistribution(aws, params)
+    distribution = await createDistribution(config, params)
   }
 
   if (domain) {
@@ -142,7 +146,7 @@ module.exports = async (aws, params = {}) => {
       domainHostedZoneId: params.domainHostedZoneId
     }
 
-    await aws.utils.deployDistributionDns(deployDistributionDnsParams)
+    await deployDistributionDns(config, deployDistributionDnsParams)
 
     distribution.certificateArn = params.certificateArn
     distribution.certificateStatus = params.certificateStatus

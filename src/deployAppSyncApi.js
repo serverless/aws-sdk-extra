@@ -1,4 +1,6 @@
-const setAuthConfig = (aws, params, createUpdateParams) => {
+const AWS = require('aws-sdk')
+
+const setAuthConfig = (config, params, createUpdateParams) => {
   if (!params.auth || params.auth === 'apiKey') {
     // api key auth
     createUpdateParams.authenticationType = 'API_KEY'
@@ -11,7 +13,7 @@ const setAuthConfig = (aws, params, createUpdateParams) => {
       // cognito auth config
       userPoolId: params.auth.userPoolId,
       defaultAction: params.auth.defaultAction || 'ALLOW',
-      awsRegion: params.auth.region || aws.config.region,
+      awsRegion: params.auth.region || config.region || 'us-east-1',
       appIdClientRegex: params.auth.appIdClientRegex
     }
   } else if (params.auth.issuer) {
@@ -32,49 +34,49 @@ const setAuthConfig = (aws, params, createUpdateParams) => {
   return createUpdateParams
 }
 
-const createAppSyncApi = async (aws, params) => {
-  const appSync = new aws.AppSync()
+const createAppSyncApi = async (config, params) => {
+  const appSync = new AWS.AppSync(config)
 
   let createGraphqlApiParams = {
     name: params.apiName
   }
 
-  createGraphqlApiParams = setAuthConfig(aws, params, createGraphqlApiParams)
+  createGraphqlApiParams = setAuthConfig(config, params, createGraphqlApiParams)
 
   const { graphqlApi } = await appSync.createGraphqlApi(createGraphqlApiParams).promise()
 
   return graphqlApi
 }
 
-const updateAppSyncApi = async (aws, params) => {
-  const appSync = new aws.AppSync()
+const updateAppSyncApi = async (config, params) => {
+  const appSync = new AWS.AppSync(config)
 
   let updateGraphqlApiparams = {
     apiId: params.apiId,
     name: params.apiName
   }
 
-  updateGraphqlApiparams = setAuthConfig(aws, params, updateGraphqlApiparams)
+  updateGraphqlApiparams = setAuthConfig(config, params, updateGraphqlApiparams)
 
   const { graphqlApi } = await appSync.updateGraphqlApi(updateGraphqlApiparams).promise()
 
   return graphqlApi
 }
 
-module.exports = async (aws, params) => {
+module.exports = async (config, params) => {
   if (!params.apiName) {
     throw new Error(`Missing "apiName" param.`)
   }
 
   try {
-    const { apiId, arn, uris } = await updateAppSyncApi(aws, params)
+    const { apiId, arn, uris } = await updateAppSyncApi(config, params)
     return { apiId, apiArn: arn, apiUrls: uris }
   } catch (e) {
     if (
       e.code === 'NotFoundException' ||
       e.message.includes(`Missing required key 'apiId' in params`)
     ) {
-      const { apiId, arn, uris } = await createAppSyncApi(aws, params)
+      const { apiId, arn, uris } = await createAppSyncApi(config, params)
       return { apiId, apiArn: arn, apiUrls: uris }
     }
     throw e

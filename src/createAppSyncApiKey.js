@@ -1,9 +1,11 @@
-module.exports = async (aws, params) => {
+const AWS = require('aws-sdk')
+
+module.exports = async (config, params) => {
   if (!params.apiId) {
     throw new Error(`Missing "apiId" param.`)
   }
 
-  const appSync = new aws.AppSync()
+  const appSync = new AWS.AppSync(config)
 
   // set default expiration to be after 1 year minus 1 day
   // instead of the aws default of 7 days.

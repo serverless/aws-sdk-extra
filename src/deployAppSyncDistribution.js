@@ -1,4 +1,6 @@
-module.exports = async (aws, params) => {
+const deployDistribution = require('./deployDistribution')
+
+module.exports = async (config, params) => {
   const { domain, apiId, apiUrl } = params
 
   if (!apiId) {
@@ -63,7 +65,7 @@ module.exports = async (aws, params) => {
     deployDistributionParams.distributionId = params.distributionId
   }
 
-  const distribution = await aws.utils.deployDistribution(deployDistributionParams)
+  const distribution = await deployDistribution(config, deployDistributionParams)
 
   return distribution
 }

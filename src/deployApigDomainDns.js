@@ -1,11 +1,12 @@
+const AWS = require('aws-sdk')
 const getDomainHostedZoneId = require('./getDomainHostedZoneId')
 
-module.exports = async (aws, params = {}) => {
-  params.log = params.log || (() => {})
+module.exports = async (config, params = {}) => {
+  params.log = params.log || (() => { })
   const { log, domain, apigatewayHostedZoneId, apigatewayDomainName } = params
-  const domainHostedZoneId = params.domainHostedZoneId || (await getDomainHostedZoneId(aws, params))
+  const domainHostedZoneId = params.domainHostedZoneId || (await getDomainHostedZoneId(config, params))
 
-  const route53 = new aws.Route53()
+  const route53 = new AWS.Route53(config)
 
   log(`Configuring Api Gateway DNS records for domain "${domain}"`)
 

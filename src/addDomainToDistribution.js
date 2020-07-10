@@ -1,10 +1,11 @@
+const AWS = require('aws-sdk')
 const { getNakedDomain, shouldConfigureNakedDomain } = require('./utils')
 
-module.exports = async (aws, params = {}) => {
-  params.log = params.log || (() => {})
+module.exports = async (config, params = {}) => {
+  params.log = params.log || (() => { })
   const { log } = params
   const nakedDomain = getNakedDomain(params.domain)
-  const cf = new aws.CloudFront()
+  const cf = new AWS.CloudFront(config)
   try {
     const updateDistributionParams = await cf
       .getDistributionConfig({ Id: params.distributionId })

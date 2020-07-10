@@ -1,4 +1,9 @@
-module.exports = async (aws, params) => {
+const getLambdaArn = require('./getLambdaArn')
+const getTableArn = require('./getTableArn')
+const getElasticSearchArn = require('./getElasticSearchArn')
+const getRdsArn = require('./getRdsArn')
+
+module.exports = async (config, params) => {
   const resolvers = params
   const policy = []
 
@@ -8,7 +13,7 @@ module.exports = async (aws, params) => {
 
       if (resolver.lambda) {
         // lambda
-        const lambdaArn = `${await aws.utils.getLambdaArn({ lambdaName: resolver.lambda })}*`
+        const lambdaArn = `${await getLambdaArn(config, { lambdaName: resolver.lambda })}*`
         policy.push({
           Effect: 'Allow',
           Action: ['lambda:invokeFunction'],
@@ -16,7 +21,7 @@ module.exports = async (aws, params) => {
         })
       } else if (resolver.table) {
         // dynamodb
-        const tableArn = await aws.utils.getTableArn({ tableName: resolver.table })
+        const tableArn = await getTableArn(config, { tableName: resolver.table })
         policy.push({
           Effect: 'Allow',
           Action: [
@@ -33,7 +38,7 @@ module.exports = async (aws, params) => {
         })
       } else if (resolver.endpoint) {
         // elastic search
-        const elasticSearchArn = await aws.utils.getElasticSearchArn({
+        const elasticSearchArn = await getElasticSearchArn(config, {
           endpoint: resolver.endpoint
         })
 
@@ -50,7 +55,7 @@ module.exports = async (aws, params) => {
         })
       } else if (resolver.relationalDatabaseSourceType) {
         // relational database
-        const rdsArn = await aws.utils.getRdsArn({
+        const rdsArn = await getRdsArn(config, {
           dbClusterIdentifier: resolver.dbClusterIdentifier
         })
 

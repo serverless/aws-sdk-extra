@@ -1,7 +1,7 @@
 {
-  "name": "@serverless/aws-sdk",
-  "version": "6.1.2",
-  "description": "Powerful Serverless Utilities",
+  "name": "@serverless/aws-sdk-extra",
+  "version": "0.0.2",
+  "description": "The AWS SDK that includes with a handful of extra convenience methods.",
   "main": "src/index.js",
   "author": "Serverless, Inc.",
   "license": "MIT",

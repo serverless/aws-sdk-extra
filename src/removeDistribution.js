@@ -1,10 +1,13 @@
-module.exports = async (aws, params = {}) => {
+const AWS = require('aws-sdk')
+const disableDistribution = require('./disableDistribution')
+
+module.exports = async (config, params = {}) => {
   const { distributionId } = params
 
   if (!distributionId) {
     throw new Error(`Missing "distributionId" param`)
   }
-  const cf = new aws.CloudFront()
+  const cf = new AWS.CloudFront(config)
 
   try {
     const getDistributionConfigRes = await cf
@@ -17,7 +20,7 @@ module.exports = async (aws, params = {}) => {
     // todo remove distribtution dns
   } catch (e) {
     if (e.code === 'DistributionNotDisabled') {
-      await aws.utils.disableDistribution(params)
+      await disableDistribution(config, params)
     } else if (e.code === 'NoSuchDistribution') {
       return
     } else {

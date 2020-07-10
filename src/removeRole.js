@@ -1,11 +1,18 @@
+const AWS = require('aws-sdk')
 const removeRolePolicies = require('./removeRolePolicies')
 
-module.exports = async (aws, params = {}) => {
-  const iam = new aws.IAM()
+module.exports = async (config, params = {}) => {
+  const iam = new AWS.IAM(config)
 
   try {
-    await removeRolePolicies(aws, params)
+    await removeRolePolicies(config, params)
+  } catch (error) {
+    if (error.code !== 'NoSuchEntity') {
+      throw error
+    }
+  }
 
+  try {
     await iam
       .deleteRole({
         RoleName: params.roleName

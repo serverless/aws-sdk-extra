@@ -1,5 +1,7 @@
-module.exports = async (aws, params = {}) => {
-  const appSync = new aws.AppSync()
+const AWS = require('aws-sdk')
+
+module.exports = async (config, params = {}) => {
+  const appSync = new AWS.AppSync(config)
 
   try {
     await appSync

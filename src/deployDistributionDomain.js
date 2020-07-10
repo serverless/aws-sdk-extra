@@ -2,9 +2,9 @@ const deployCertificate = require('./deployCertificate')
 const deployDistributionDns = require('./deployDistributionDns')
 const addDomainToDistribution = require('./addDomainToDistribution')
 
-module.exports = async (aws, params = {}) => {
+module.exports = async (config, params = {}) => {
   const { certificateArn, certificateStatus, domainHostedZoneId } = await deployCertificate(
-    aws,
+    config,
     params
   )
 
@@ -14,11 +14,11 @@ module.exports = async (aws, params = {}) => {
 
   // cannot add domain to distribution unless it was finally issued
   if (certificateStatus === 'ISSUED') {
-    const { distributionUrl } = await addDomainToDistribution(aws, params)
+    const { distributionUrl } = await addDomainToDistribution(config, params)
 
     params.distributionUrl = distributionUrl
 
-    await deployDistributionDns(aws, params)
+    await deployDistributionDns(config, params)
   }
 
   return {

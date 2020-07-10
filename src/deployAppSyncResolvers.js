@@ -1,8 +1,14 @@
+const AWS = require('aws-sdk')
 const { memoizeWith, omit } = require('ramda')
+const crypto = require('crypto')
 const { sleep } = require('./utils')
+const getRoleArn = require('./getRoleArn')
+const getLambdaArn = require('./getLambdaArn')
 
-const listResolvers = async (aws, params) => {
-  const appSync = new aws.AppSync()
+
+const listResolvers = async (config, params) => {
+  const appSync = new AWS.AppSync(config)
+
   try {
     const res = await appSync.listResolvers(params).promise()
 
@@ -20,11 +26,11 @@ const listResolvers = async (aws, params) => {
   }
 }
 
-const getExistingResolvers = async (aws, { apiId }) => {
+const getExistingResolvers = async (config, { apiId }) => {
   const promises = [
     // todo any other types?
-    listResolvers(aws, { apiId, typeName: 'Query' }),
-    listResolvers(aws, { apiId, typeName: 'Mutation' })
+    listResolvers(config, { apiId, typeName: 'Query' }),
+    listResolvers(config, { apiId, typeName: 'Mutation' })
   ]
 
   const res = await Promise.all(promises)
@@ -35,8 +41,8 @@ const getExistingResolvers = async (aws, { apiId }) => {
   }
 }
 
-const updateAppSyncResolver = async (aws, params) => {
-  const appSync = new aws.AppSync()
+const updateAppSyncResolver = async (config, params) => {
+  const appSync = new AWS.AppSync(config)
   try {
     const updateResolverRes = await appSync.updateResolver(params).promise()
     return updateResolverRes
@@ -55,8 +61,8 @@ const updateAppSyncResolver = async (aws, params) => {
   }
 }
 
-const createAppSyncResolver = async (aws, params) => {
-  const appSync = new aws.AppSync()
+const createAppSyncResolver = async (config, params) => {
+  const appSync = new AWS.AppSync(config)
   try {
     const createResolverRes = await appSync.createResolver(params).promise()
     return createResolverRes
@@ -80,12 +86,12 @@ const getDataSourceName = (name) => {
   return name.replace(/[^a-z0-9]/gi, '') // data source name must be alphanumeric
 }
 
-const deployAppSyncDataSource = async (aws, params) => {
-  const appSync = new aws.AppSync()
+const deployAppSyncDataSource = async (config, params) => {
+  const appSync = new AWS.AppSync(config)
 
   const dataSourceParams = {
     apiId: params.apiId,
-    serviceRoleArn: await aws.utils.getRoleArn({ roleName: params.roleName })
+    serviceRoleArn: await getRoleArn(config, { roleName: params.roleName })
   }
 
   if (params.lambda) {
@@ -93,14 +99,14 @@ const deployAppSyncDataSource = async (aws, params) => {
     dataSourceParams.name = getDataSourceName(params.lambda)
     dataSourceParams.type = 'AWS_LAMBDA'
     dataSourceParams.lambdaConfig = {
-      lambdaFunctionArn: await aws.utils.getLambdaArn({ lambdaName: params.lambda })
+      lambdaFunctionArn: await getLambdaArn(config, { lambdaName: params.lambda })
     }
   } else if (params.table) {
     // dynamodb config
     dataSourceParams.name = getDataSourceName(params.table)
     dataSourceParams.type = 'AMAZON_DYNAMODB'
     dataSourceParams.dynamodbConfig = {
-      awsRegion: params.tableRegion || aws.config.region,
+      awsRegion: params.tableRegion || config.region,
       tableName: params.table
     }
 
@@ -139,7 +145,7 @@ const deployAppSyncDataSource = async (aws, params) => {
     dataSourceParams.name = params.name // required. todo how to auto generate endpoint?!
     dataSourceParams.type = 'AMAZON_ELASTICSEARCH'
     dataSourceParams.elasticsearchConfig = {
-      awsRegion: params.endpointRegion || aws.config.region,
+      awsRegion: params.endpointRegion || config.region,
       endpoint: params.endpoint
     }
   } else if (params.relationalDatabaseSourceType) {
@@ -149,7 +155,7 @@ const deployAppSyncDataSource = async (aws, params) => {
     dataSourceParams.relationalDatabaseConfig = {
       relationalDatabaseSourceType: params.relationalDatabaseSourceType,
       rdsHttpEndpointConfig: {
-        awsRegion: params.endpointRegion || aws.config.region,
+        awsRegion: params.endpointRegion || config.region,
         awsSecretStoreArn: params.awsSecretStoreArn,
         databaseName: params.database,
         dbClusterIdentifier: params.dbClusterIdentifier,
@@ -191,9 +197,8 @@ const deployAppSyncDataSource = async (aws, params) => {
     throw e
   }
 }
-const crypto = require('crypto')
 
-const deployAppSyncDataSourceCached = memoizeWith((aws, params) => {
+const deployAppSyncDataSourceCached = memoizeWith((config, params) => {
   // for multiple resolvers using the same data source, we just need
   // to deploy the data source once. This function uses a memoized/cached
   // version of the function if called twice
@@ -204,8 +209,8 @@ const deployAppSyncDataSourceCached = memoizeWith((aws, params) => {
   return hash
 }, deployAppSyncDataSource)
 
-const deployAppSyncResolver = async (aws, params) => {
-  const { dataSourceName } = await deployAppSyncDataSource(aws, params)
+const deployAppSyncResolver = async (config, params) => {
+  const { dataSourceName } = await deployAppSyncDataSource(config, params)
   const resolverParams = {
     apiId: params.apiId,
     kind: 'UNIT',
@@ -218,19 +223,19 @@ const deployAppSyncResolver = async (aws, params) => {
     responseMappingTemplate: params.response || '$util.toJson($context.result)'
   }
   try {
-    const updateResolverRes = await updateAppSyncResolver(aws, resolverParams)
+    const updateResolverRes = await updateAppSyncResolver(config, resolverParams)
     return updateResolverRes
   } catch (e) {
     if (e.code === 'NotFoundException' && e.message.includes(`No resolver found`)) {
-      const createResolverRes = await createAppSyncResolver(aws, resolverParams)
+      const createResolverRes = await createAppSyncResolver(config, resolverParams)
       return createResolverRes
     }
     throw e
   }
 }
 
-const getExistingDataSourcesNames = async (aws, { apiId }) => {
-  const appSync = new aws.AppSync()
+const getExistingDataSourcesNames = async (config, { apiId }) => {
+  const appSync = new AWS.AppSync(config)
 
   const listDataSourcesRes = await appSync.listDataSources({ apiId }).promise()
 
@@ -251,7 +256,7 @@ const getDataSourcesNames = (resolvers) => {
   return dataSourcesNames
 }
 
-const deployAppSyncResolvers = async (aws, params) => {
+const deployAppSyncResolvers = async (config, params) => {
   try {
     const { apiId, roleName, resolvers } = params
 
@@ -268,8 +273,8 @@ const deployAppSyncResolvers = async (aws, params) => {
     }
 
     const existingResources = await Promise.all([
-      getExistingResolvers(aws, params),
-      getExistingDataSourcesNames(aws, params)
+      getExistingResolvers(config, params),
+      getExistingDataSourcesNames(config, params)
     ])
     const existingResolvers = existingResources[0]
     const existingDataSourcesNames = existingResources[1]
@@ -293,14 +298,14 @@ const deployAppSyncResolvers = async (aws, params) => {
           type: type,
           field: field
         }
-        promises.push(deployAppSyncResolver(aws, resolverParams))
+        promises.push(deployAppSyncResolver(config, resolverParams))
       }
     }
 
     for (const type in existingResolvers) {
       for (const field in existingResolvers[type]) {
         if (!resolvers[type] || !resolvers[type][field]) {
-          const appSync = new aws.AppSync()
+          const appSync = new AWS.AppSync(config)
           const deleteAppSyncResolverParams = {
             apiId,
             fieldName: field,
@@ -318,7 +323,7 @@ const deployAppSyncResolvers = async (aws, params) => {
     const removeOutdatedDataSources = []
     for (const existingDataSourceName of existingDataSourcesNames) {
       if (!dataSourcesNames.includes(existingDataSourceName)) {
-        const appSync = new aws.AppSync()
+        const appSync = new AWS.AppSync(config)
         const deleteDataSourceParams = {
           apiId,
           name: existingDataSourceName
@@ -334,7 +339,7 @@ const deployAppSyncResolvers = async (aws, params) => {
       e.message.includes('Schema is currently being altered')
     ) {
       await sleep(1000)
-      const deployAppSyncResolversRes = await deployAppSyncResolvers(aws, params)
+      const deployAppSyncResolversRes = await deployAppSyncResolvers(config, params)
       return deployAppSyncResolversRes
     }
     throw e

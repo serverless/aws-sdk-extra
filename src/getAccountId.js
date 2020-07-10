@@ -1,7 +1,8 @@
+const AWS = require('aws-sdk')
 const { memoizeWith, identity } = require('ramda')
 
-const getAccountId = async (aws) => {
-  const sts = new aws.STS()
+const getAccountId = async (config) => {
+  const sts = new AWS.STS(config)
 
   const res = await sts.getCallerIdentity({}).promise()
 

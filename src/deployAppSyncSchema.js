@@ -1,7 +1,9 @@
+const AWS = require('aws-sdk')
 const { sleep } = require('./utils')
+
 // todo checksum
-const schemaCreation = async (aws, params) => {
-  const appSync = new aws.AppSync()
+const schemaCreation = async (config, params) => {
+  const appSync = new AWS.AppSync(config)
   const { status, details } = await appSync
     .getSchemaCreationStatus({ apiId: params.apiId })
     .promise()
@@ -9,7 +11,7 @@ const schemaCreation = async (aws, params) => {
   if (status === 'PROCESSING') {
     // retry if still processing
     await sleep(1000)
-    return schemaCreation(aws, params)
+    return schemaCreation(config, params)
   } else if (status === 'SUCCESS') {
     // return if success
     return status
@@ -22,7 +24,7 @@ const schemaCreation = async (aws, params) => {
   throw new Error(`AppSync schema status: ${status} - ${details}`)
 }
 
-module.exports = async (aws, params = {}) => {
+module.exports = async (config, params = {}) => {
   if (!params.apiId) {
     throw new Error(`Missing "appId" param.`)
   }
@@ -31,7 +33,7 @@ module.exports = async (aws, params = {}) => {
     throw new Error(`Missing "schema" param.`)
   }
 
-  const appSync = new aws.AppSync()
+  const appSync = new AWS.AppSync(config)
 
   await appSync
     .startSchemaCreation({
@@ -40,7 +42,7 @@ module.exports = async (aws, params = {}) => {
     })
     .promise()
 
-  const status = await schemaCreation(aws, params)
+  const status = await schemaCreation(config, params)
 
   return { status }
 }

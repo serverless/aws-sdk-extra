@@ -1,4 +1,6 @@
-module.exports = async (aws, params = {}) => {
+const deployDistribution = require('./deployDistribution')
+
+module.exports = async (config, params = {}) => {
   const { distributionId } = params
   if (!distributionId) {
     throw new Error(`Missing "distributionId" param`)
@@ -13,5 +15,5 @@ module.exports = async (aws, params = {}) => {
     }
   }
 
-  return aws.utils.deployDistribution(deployDistributionParams)
+  return deployDistribution(config, deployDistributionParams)
 }

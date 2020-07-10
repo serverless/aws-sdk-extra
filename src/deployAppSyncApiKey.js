@@ -1,11 +1,13 @@
+const AWS = require('aws-sdk')
+
 const createAppSyncApiKey = require('./createAppSyncApiKey')
 
-module.exports = async (aws, params) => {
+module.exports = async (config, params) => {
   if (!params.apiId) {
     throw new Error(`Missing "apiId" param.`)
   }
 
-  const appSync = new aws.AppSync()
+  const appSync = new AWS.AppSync(config)
 
   const createAppSyncApiKeyParams = {
     apiId: params.apiId,
@@ -14,7 +16,7 @@ module.exports = async (aws, params) => {
   }
 
   if (!params.apiKey) {
-    return createAppSyncApiKey(aws, createAppSyncApiKeyParams)
+    return createAppSyncApiKey(config, createAppSyncApiKeyParams)
   }
 
   const listApiKeysParams = {
@@ -29,5 +31,5 @@ module.exports = async (aws, params) => {
     return { apiKey: apiKeyExists.id }
   }
 
-  return createAppSyncApiKey(aws, createAppSyncApiKeyParams)
+  return createAppSyncApiKey(config, createAppSyncApiKeyParams)
 }

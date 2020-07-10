@@ -1,183 +1,237 @@
-const aws = require('aws-sdk')
-aws.utils = {}
-
-/*
- * Deploys a CloudFront distribution domain by adding the domain
- */
-aws.utils.deployDistributionDomain = (params) => require('./deployDistributionDomain')(aws, params)
-
-/*
- * Deploys a free ACM certificate for the given domain
- */
-aws.utils.deployCertificate = (params) => require('./deployCertificate')(aws, params)
-
-/*
- * Deploys a DNS records for a distribution domain
- */
-aws.utils.deployDistributionDns = (params) => require('./deployDistributionDns')(aws, params)
-
-/*
- * Fetches the hosted zone id for the given domain
- */
-aws.utils.getDomainHostedZoneId = (params) => require('./getDomainHostedZoneId')(aws, params)
-
-/*
- * Adds a domain or subdomain to a CloudFront Distribution
- */
-aws.utils.addDomainToDistribution = (params) => require('./addDomainToDistribution')(aws, params)
-
-/*
- * Updates or creates the given role name with the given service & policy
- */
-aws.utils.deployRole = (params) => require('./deployRole')(aws, params)
-
-/*
- * Deletes the given role and all its attached managed and inline policies
- */
-aws.utils.removeRole = (params) => require('./removeRole')(aws, params)
-
-/*
- * Deletes all attached managed and inline policies for the given role
- */
-aws.utils.removeRolePolicies = (params) => require('./removeRolePolicies')(aws, params)
-
-/*
- * Updates a lambda if it exists, otherwise creates a new one.
- */
-aws.utils.deployLambda = (params) => require('./deployLambda')(aws, params)
-
-/*
- * Deploys the DNS records for an Api Gateway V2 HTTP custom domain
- */
-aws.utils.deployApigDomainDns = (params) => require('./deployApigDomainDns')(aws, params)
-
-/*
- * Updates or creates an AppSync API
- */
-aws.utils.deployAppSyncApi = (params) => require('./deployAppSyncApi')(aws, params)
-
-/*
- * Updates or creates an AppSync Schema
- */
-aws.utils.deployAppSyncSchema = (params) => require('./deployAppSyncSchema')(aws, params)
-
-/*
- * Updates or creates AppSync Resolvers
- */
-aws.utils.deployAppSyncResolvers = (params) => require('./deployAppSyncResolvers')(aws, params)
-
-/*
- * Generates the minimum IAM role policy that is required for the given resolvers.
- */
-aws.utils.getAppSyncResolversPolicy = (params) =>
-  require('./getAppSyncResolversPolicy')(aws, params)
-
-/*
- * Returns the account id of the configured credentials
- */
-aws.utils.getAccountId = (params) => require('./getAccountId')(aws, params)
-
-/*
- * Constructs a Lambda ARN from the given Lambda name
- */
-aws.utils.getLambdaArn = (params) => require('./getLambdaArn')(aws, params)
-
-/*
- * Constructs an IAM Role ARN from the given Role name
- */
-aws.utils.getRoleArn = (params) => require('./getRoleArn')(aws, params)
-
-/*
- * Constructs Table ARN from the given Table name
- */
-aws.utils.getTableArn = (params) => require('./getTableArn')(aws, params)
-
-/*
- * Constructs ElasticSearch ARN from the given ElasticSearch domain
- */
-aws.utils.getElasticSearchArn = (params) => require('./getElasticSearchArn')(aws, params)
-
-/*
- * Constructs RDS ARN from the given dbClusterIdentifier
- */
-aws.utils.getRdsArn = (params) => require('./getRdsArn')(aws, params)
-
-/*
- * Constructs CloudWatch Log Group ARN from the given lambdaName or logGroupName
- */
-aws.utils.getCloudWatchLogGroupArn = (params) => require('./getCloudWatchLogGroupArn')(aws, params)
+const AWS = require('aws-sdk')
+const deployDistributionDomain = require('./deployDistributionDomain')
+const deployCertificate = require('./deployCertificate')
+const deployDistributionDns = require('./deployDistributionDns')
+const getDomainHostedZoneId = require('./getDomainHostedZoneId')
+const addDomainToDistribution = require('./addDomainToDistribution')
+const deployRole = require('./deployRole')
+const getRole = require('./getRole')
+const removeRole = require('./removeRole')
+const removeRolePolicies = require('./removeRolePolicies')
+const deployLambda = require('./deployLambda')
+const deployApigDomainDns = require('./deployApigDomainDns')
+const deployAppSyncApi = require('./deployAppSyncApi')
+const deployAppSyncSchema = require('./deployAppSyncSchema')
+const deployAppSyncResolvers = require('./deployAppSyncResolvers')
+const getAppSyncResolversPolicy = require('./getAppSyncResolversPolicy')
+const getAccountId = require('./getAccountId')
+const getLambdaArn = require('./getLambdaArn')
+const getRoleArn = require('./getRoleArn')
+const getTableArn = require('./getTableArn')
+const getElasticSearchArn = require('./getElasticSearchArn')
+const getRdsArn = require('./getRdsArn')
+const getCloudWatchLogGroupArn = require('./getCloudWatchLogGroupArn')
+const removeLambda = require('./removeLambda')
+const removeAppSyncApi = require('./removeAppSyncApi')
+const createAppSyncApiKey = require('./createAppSyncApiKey')
+const deployAppSyncApiKey = require('./deployAppSyncApiKey')
+const deployAppSyncDistribution = require('./deployAppSyncDistribution')
+const deployDistribution = require('./deployDistribution')
+const disableDistribution = require('./disableDistribution')
+const removeDistribution = require('./removeDistribution')
+const getMetrics = require('./getMetrics')
 
 /**
- * A convenience function to fetch useful metrics from AWS Cloudwatch for one or many AWS 
- * resources (e.g. AWS HTTP API, AWS Lambda), and transform their resulting data into
- * the standard format that is supported by Serverless Framework Component metrics.
- * 
- * @param {string} params.credentials AWS credentials
- * @param {string} params.region AWS region
- * @param {string} params.rangeStart ISO8601 timestamp for the start of the date range to query within
- * @param {string} params.rangeEnd ISO8601 timestamp for the end of the date range to query within
- * @param {array} params.resources An array containing objects representing AWS resources to query against.  View examples for supported resources.
- * 
- * @example
- *
- * // AWS HTTP API
- * {
- *   type: 'aws_http_api',
- *   apiId: 'j0jafsasf',  
- * }
- * 
- * // AWS Lambda
- * {
- *   type: 'aws_lambda',
- *   functionName: 'myLambdaFunction',  
- * }
- *
+ * Define AWS Extras class
+ * @param {*} params 
  */
-aws.utils.getMetrics = (params) => require('./getMetrics')(aws, params)
 
-/*
- * Removes a Lambda function. Does nothing if already removed.
- */
-aws.utils.removeLambda = (params) => require('./removeLambda')(aws, params)
+class Extras {
 
-/*
- * Removes an AppSync API. Does nothing if already removed.
- */
-aws.utils.removeAppSyncApi = (params) => require('./removeAppSyncApi')(aws, params)
+  constructor(config = {}) {
+    this.config = config
+  }
 
-/*
- * Creates an AppSync API Key that is valid for 1 year
- */
-aws.utils.createAppSyncApiKey = (params) => require('./createAppSyncApiKey')(aws, params)
+  /**
+   * A convenience function to fetch useful metrics from AWS Cloudwatch for one or many AWS
+   * resources (e.g. AWS HTTP API, AWS Lambda), and transform their resulting data into
+   * the standard format that is supported by Serverless Framework Component metrics.
+   *
+   * @param {string} params.region AWS region
+   * @param {string} params.rangeStart ISO8601 timestamp for the start of the date range to query within
+   * @param {string} params.rangeEnd ISO8601 timestamp for the end of the date range to query within
+   * @param {array} params.resources An array containing objects representing AWS resources to query against.  View examples for supported resources.
+   *
+   * @example
+   *
+   * // AWS HTTP API
+   * {
+   *   type: 'aws_http_api',
+   *   apiId: 'j0jafsasf',
+   * }
+   *
+   * // AWS Lambda
+   * {
+   *   type: 'aws_lambda',
+   *   functionName: 'myLambdaFunction',
+   * }
+   *
+   */
+  getMetrics(params) { return getMetrics(this.config, params) }
 
-/*
- * Updates or creats an AppSync API Key
- */
-aws.utils.deployAppSyncApiKey = (params) => require('./deployAppSyncApiKey')(aws, params)
+  /**
+   * Deploys a CloudFront distribution domain by adding the domain
+   */
+  deployDistributionDomain(params) { return deployDistributionDomain(this.config, params) }
 
-/*
- * Updates or creats a CloudFront distribution for AppSync API
- */
-aws.utils.deployAppSyncDistribution = (params) =>
-  require('./deployAppSyncDistribution')(aws, params)
+  /**
+   * Deploys a free ACM certificate for the given domain
+   */
+  deployCertificate(params) { return deployCertificate(this.config, params) }
 
-/*
- * Updates or creats a CloudFront distribution
- */
-aws.utils.deployDistribution = (params) => require('./deployDistribution')(aws, params)
+  /** 
+   * Deploys a DNS records for a distribution domain
+   */
+  deployDistributionDns(params) { return deployDistributionDns(this.config, params) }
 
-/*
- * Disables a CloudFront distribution
- */
-aws.utils.disableDistribution = (params) => require('./disableDistribution')(aws, params)
+  /**
+   * Fetches the hosted zone id for the given domain
+   */
+  getDomainHostedZoneId(params) { return getDomainHostedZoneId(this.config, params) }
 
-/*
- * Removes a CloudFront distribution. If distribution is enabled, it just disables it.
- * If distribution is already disabled, it removes it completely.
- */
-aws.utils.removeDistribution = (params) => require('./removeDistribution')(aws, params)
+  /**
+   * Adds a domain or subdomain to a CloudFront Distribution
+   */
+  addDomainToDistribution(params) { return addDomainToDistribution(this.config, params) }
 
-/*
- * Export everything
+  /**
+   * Updates or creates an IAM Role and Policy
+   * @param {*} params.roleName The name of the IAM Role
+   * @param {*} params.roleDescription A description for the role
+   * @param {*} params.roleTags Tags for the role
+   * @param {*} params.policy The policy to inline or attach to the role.  If you provide a string of an AWS IAM Managed Policy ARN, it will attach it.  If you provide an array or object it will inline the policy into the Role.
+   * @param {*} params.service The "Service" section of the assumeRolePolicyDocument
+   * @param {*} params.assumeRolePolicyDocument The assumeRolePolicyDocument.  Overrides params.service
+   */
+  deployRole(params) { return deployRole(this.config, params) }
+
+  /**
+   * Get an AWS IAM Role, its tags, inline policies and managed policies
+   * @param {*} params.roleName The name of the IAM Role you want to remove
+   */
+  getRole(params) { return getRole(this.config, params) }
+
+  /**
+  * Deletes the given role and all its attached managed and inline policies
+   */
+  removeRole(params) { return removeRole(this.config, params) }
+
+  /**
+   * Deletes all attached managed and inline policies for the given role
+   */
+  removeRolePolicies(params) { return removeRolePolicies(this.config, params) }
+
+  /**
+   * Updates a lambda if it exists, otherwise creates a new one.
+   */
+  deployLambda(params) { return deployLambda(this.config, params) }
+
+  /**
+   * Deploys the DNS records for an Api Gateway V2 HTTP custom domain
+   */
+  deployApigDomainDns(params) { return deployApigDomainDns(this.config, params) }
+
+  /**
+   * Updates or creates an AppSync API
+   */
+  deployAppSyncApi(params) { return deployAppSyncApi(this.config, params) }
+
+  /**
+   * Updates or creates an AppSync Schema
+   */
+  deployAppSyncSchema(params) { return deployAppSyncSchema(this.config, params) }
+
+  /**
+   * Updates or creates AppSync Resolvers
+   */
+  deployAppSyncResolvers(params) { return deployAppSyncResolvers(this.config, params) }
+
+  /**
+   * Generates the minimum IAM role policy that is required for the given resolvers.
+   */
+  getAppSyncResolversPolicy(params) { return getAppSyncResolversPolicy(this.config, params) }
+
+  /**
+   * Returns the account id of the configured credentials
+   */
+  getAccountId(params) { return getAccountId(this.config, params) }
+
+  /**
+   * Constructs a Lambda ARN from the given Lambda name
+   */
+  getLambdaArn(params) { return getLambdaArn(this.config, params) }
+
+  /**
+   * Constructs an IAM Role ARN from the given Role name
+   */
+  getRoleArn(params) { return getRoleArn(this.config, params) }
+
+  /**
+   * Constructs Table ARN from the given Table name
+   */
+  getTableArn(params) { return getTableArn(this.config, params) }
+
+  /**
+   * Constructs ElasticSearch ARN from the given ElasticSearch domain
+   */
+  getElasticSearchArn(params) { return getElasticSearchArn(this.config, params) }
+
+  /**
+   * Constructs RDS ARN from the given dbClusterIdentifier
+   */
+  getRdsArn(params) { return getRdsArn(this.config, params) }
+
+  /**
+   * Constructs CloudWatch Log Group ARN from the given lambdaName or logGroupName
+   */
+  getCloudWatchLogGroupArn(params) { return getCloudWatchLogGroupArn(this.config, params) }
+
+  /**
+   * Removes a Lambda function. Does nothing if already removed.
+   */
+  removeLambda(params) { return removeLambda(this.config, params) }
+
+  /**
+   * Removes an AppSync API. Does nothing if already removed.
+   */
+  removeAppSyncApi(params) { return removeAppSyncApi(this.config, params) }
+
+  /**
+   * Creates an AppSync API Key that is valid for 1 year
+   */
+  createAppSyncApiKey(params) { return createAppSyncApiKey(this.config, params) }
+
+  /**
+   * Updates or creats an AppSync API Key
+   */
+  deployAppSyncApiKey(params) { return deployAppSyncApiKey(this.config, params) }
+
+  /**
+   * Updates or creats a CloudFront distribution for AppSync API
+   */
+  deployAppSyncDistribution(params) { return deployAppSyncDistribution(this.config, params) }
+
+  /**
+   * Updates or creats a CloudFront distribution for AppSync API
+   */
+  deployDistribution(params) { return deployDistribution(this.config, params) }
+
+  /**
+   * Disables a CloudFront distribution
+   */
+  disableDistribution(params) { return disableDistribution(this.config, params) }
+
+  /**
+   * Removes a CloudFront distribution. If distribution is enabled, it just disables it.
+   * If distribution is already disabled, it removes it completely.
+   */
+  removeDistribution(params) { return removeDistribution(this.config, params) }
+
+}
+
+/**
+ * Export
  */
-module.exports = aws
+
+AWS.Extras = Extras;
+module.exports = AWS;

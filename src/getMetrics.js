@@ -1,16 +1,15 @@
+const AWS = require('aws-sdk')
 const moment = require('moment')
 
 module.exports = async (
-  aws,
+  config,
   {
-    credentials,
-    region,
     rangeStart,
     rangeEnd,
     resources,
   }) => {
 
-  const cloudwatch = new aws.CloudWatch({ credentials, region });
+  const cloudwatch = new AWS.CloudWatch(config);
 
   /**
    * Validate parameters

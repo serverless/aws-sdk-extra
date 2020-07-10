@@ -1,3 +1,4 @@
+const AWS = require('aws-sdk')
 const fs = require('fs')
 const { sleep, zip } = require('./utils')
 
@@ -16,7 +17,7 @@ const getVpcConfig = (vpcConfig) => {
   }
 }
 
-const updateOrCreateLambda = async (aws, params = {}) => {
+const updateOrCreateLambda = async (config, params = {}) => {
   try {
     if (!params.lambdaName) {
       throw new Error(`Missing lambdaName param.`)
@@ -44,7 +45,7 @@ const updateOrCreateLambda = async (aws, params = {}) => {
       }
     }
 
-    const lambda = new aws.Lambda()
+    const lambda = new AWS.Lambda(config)
 
     const vpcConfig = getVpcConfig(params.vpcConfig)
 
@@ -116,7 +117,7 @@ const updateOrCreateLambda = async (aws, params = {}) => {
   } catch (e) {
     if (e.message.includes('The role defined for the function cannot be assumed by Lambda')) {
       await sleep(1000)
-      return updateOrCreateLambda(aws, params)
+      return updateOrCreateLambda(config, params)
     }
     throw e
   }
