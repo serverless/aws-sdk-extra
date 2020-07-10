@@ -65,6 +65,12 @@ class Extras {
    *   type: 'aws_lambda',
    *   functionName: 'myLambdaFunction',
    * }
+   * 
+   * // AWS Cloudfront
+   * {
+   *   type: 'aws_cloudfront',
+   *   distributionId: 'ja9fa9j1',
+   * }
    *
    */
   getMetrics(params) { return getMetrics(this.config, params) }

@@ -611,3 +611,144 @@ resourceHandlers.aws_lambda.transforms = (cwMetric, metric) => {
 
   return metric;
 }
+
+/**
+ * AWS Cloudfront
+ */
+
+resourceHandlers.aws_cloudfront = {}
+
+/**
+ * AWS Cloudfront Cloudwatch queries
+ * @param {*} period 
+ * @param {*} distributionId 
+ */
+resourceHandlers.aws_cloudfront.queries = (period, { distributionId, stage }) => {
+
+  if (!period || !distributionId) {
+    throw new Error(`Missing required params`)
+  }
+
+  return [
+    {
+      Id: 'distribution_requests',
+      ReturnData: true,
+      MetricStat: {
+        Metric: {
+          MetricName: 'Requests',
+          Namespace: 'AWS/CloudFront',
+          Dimensions: [
+            {
+              Name: 'Region',
+              Value: 'Global', // Cloudfront is global by default, so this property is always "Global", adding it in just to be sure.
+            },
+            {
+              Name: 'DistributionId',
+              Value: distributionId,
+            },
+          ],
+        },
+        Period: period,
+        Stat: 'Sum',
+      },
+    },
+    {
+      Id: 'distribution_error_rate',
+      ReturnData: true,
+      MetricStat: {
+        Metric: {
+          MetricName: 'TotalErrorRate',
+          Namespace: 'AWS/CloudFront',
+          Dimensions: [
+            {
+              Name: 'Region',
+              Value: 'Global', // Cloudfront is global by default, so this property is always "Global", adding it in just to be sure.
+            },
+            {
+              Name: 'DistributionId',
+              Value: distributionId,
+            },
+          ],
+        },
+        Period: period,
+        Stat: 'Average',
+        Unit: 'Percent',
+      },
+    },
+    {
+      Id: 'distribution_bytes_downloaded',
+      ReturnData: true,
+      MetricStat: {
+        Metric: {
+          MetricName: 'BytesDownloaded',
+          Namespace: 'AWS/CloudFront',
+          Dimensions: [
+            {
+              Name: 'Region',
+              Value: 'Global', // Cloudfront is global by default, so this property is always "Global", adding it in just to be sure.
+            },
+            {
+              Name: 'DistributionId',
+              Value: distributionId,
+            },
+          ],
+        },
+        Period: period,
+        Stat: 'Sum',
+      },
+    }
+    // There is more data available if "additional metrics" is enabled...  Something to consider for later...
+  ]
+}
+
+/**
+ * AWS Cloudfront Cloudwatch transforms
+ * @param {*} period 
+ * @param {*} apiId 
+ */
+resourceHandlers.aws_cloudfront.transforms = (cwMetric, metric) => {
+
+  if (!cwMetric || !metric) {
+    throw new Error(`Missing required params`)
+  }
+
+  // Total Requests
+  if (cwMetric.Id === 'distribution_requests') {
+    metric.title = 'Requests';
+    metric.description =
+      'The total number of viewer requests received by CloudFront, for all HTTP methods and for both HTTP and HTTPS requests.  This is not a count of unique users, but of the total requests of assets from Cloudfront.  A single webpage may have several assets on it (e.g. images, CSS, JS, etc.).';
+    metric.yDataSets[0].color = '#000000';
+    // Get sum
+    metric.stat = metric.yDataSets[0].yData.reduce((previous, current) => current + previous);
+  }
+
+  // Total Error Rate
+  if (cwMetric.Id === 'distribution_error_rate') {
+    metric.title = 'Request Error Rate';
+    metric.description =
+      'The percentage of all viewer requests for which the response’s HTTP status code is 4xx or 5xx.';
+    metric.statColor = '#FE5850';
+    metric.yDataSets[0].color = '#FE5850';
+    // Get sum
+    metric.stat = metric.yDataSets[0].yData.reduce((previous, current) => current + previous);
+    metric.statText = '%';
+  }
+
+  // Bytes Downloaded in Kilobytes
+  if (cwMetric.Id === 'distribution_bytes_downloaded') {
+    metric.title = 'Data Downloaded';
+    metric.description = 'The total number of kilobytes downloaded by viewers for GET, HEAD, and OPTIONS requests.';
+    metric.statColor = '#000000';
+    metric.yDataSets[0].color = '#000000';
+    // Convert to kilobytes
+    metric.yDataSets[0].yData = metric.yDataSets[0].yData.map((val) => {
+      const kb = val / Math.pow(1024, 1);
+      return Math.round(kb * 100) / 100;
+    });
+    // Get sum of bytes
+    metric.statText = 'kb';
+    metric.stat = metric.yDataSets[0].yData.reduce((previous, current) => current + previous);
+  }
+
+  return metric
+}
