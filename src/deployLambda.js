@@ -102,7 +102,8 @@ const updateOrCreateLambda = async (aws, params = {}) => {
         Layers: params.layers || [],
         Runtime: params.runtime || 'nodejs12.x',
         Publish: params.publish === true ? true : false,
-        VpcConfig: vpcConfig
+        VpcConfig: vpcConfig,
+        SourceRole: params.sourceRole
       }
 
       const lambdaRes = await lambda.createFunction(createFunctionParams).promise()
