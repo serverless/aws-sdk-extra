@@ -1,7 +1,6 @@
 const fs = require('fs')
 const { sleep, zip } = require('./utils')
 
-
 const getVpcConfig = (vpcConfig) => {
   if (vpcConfig == 'undefined' || vpcConfig == null) {
     return {
@@ -61,7 +60,8 @@ const updateOrCreateLambda = async (aws, params = {}) => {
         Environment: {
           Variables: params.env || {}
         },
-        VpcConfig: vpcConfig
+        VpcConfig: vpcConfig,
+        SourceRole: params.sourceRole
       }
 
       await lambda.updateFunctionConfiguration(updateFunctionConfigurationParams).promise()
