@@ -33,11 +33,10 @@ const getMetrics = require('./getMetrics')
 
 /**
  * Define AWS Extras class
- * @param {*} params 
+ * @param {*} params
  */
 
 class Extras {
-
   constructor(config = {}) {
     this.config = config
   }
@@ -65,7 +64,7 @@ class Extras {
    *   type: 'aws_lambda',
    *   functionName: 'myLambdaFunction',
    * }
-   * 
+   *
    * // AWS Cloudfront
    * {
    *   type: 'aws_cloudfront',
@@ -73,32 +72,44 @@ class Extras {
    * }
    *
    */
-  getMetrics(params) { return getMetrics(this.config, params) }
+  getMetrics(params) {
+    return getMetrics(this.config, params)
+  }
 
   /**
    * Deploys a CloudFront distribution domain by adding the domain
    */
-  deployDistributionDomain(params) { return deployDistributionDomain(this.config, params) }
+  deployDistributionDomain(params) {
+    return deployDistributionDomain(this.config, params)
+  }
 
   /**
    * Deploys a free ACM certificate for the given domain
    */
-  deployCertificate(params) { return deployCertificate(this.config, params) }
+  deployCertificate(params) {
+    return deployCertificate(this.config, params)
+  }
 
-  /** 
+  /**
    * Deploys a DNS records for a distribution domain
    */
-  deployDistributionDns(params) { return deployDistributionDns(this.config, params) }
+  deployDistributionDns(params) {
+    return deployDistributionDns(this.config, params)
+  }
 
   /**
    * Fetches the hosted zone id for the given domain
    */
-  getDomainHostedZoneId(params) { return getDomainHostedZoneId(this.config, params) }
+  getDomainHostedZoneId(params) {
+    return getDomainHostedZoneId(this.config, params)
+  }
 
   /**
    * Adds a domain or subdomain to a CloudFront Distribution
    */
-  addDomainToDistribution(params) { return addDomainToDistribution(this.config, params) }
+  addDomainToDistribution(params) {
+    return addDomainToDistribution(this.config, params)
+  }
 
   /**
    * Updates or creates an IAM Role and Policy
@@ -109,135 +120,184 @@ class Extras {
    * @param {*} params.service The "Service" section of the assumeRolePolicyDocument
    * @param {*} params.assumeRolePolicyDocument The assumeRolePolicyDocument.  Overrides params.service
    */
-  deployRole(params) { return deployRole(this.config, params) }
+  deployRole(params) {
+    return deployRole(this.config, params)
+  }
 
   /**
    * Get an AWS IAM Role, its tags, inline policies and managed policies
    * @param {*} params.roleName The name of the IAM Role you want to remove
    */
-  getRole(params) { return getRole(this.config, params) }
+  getRole(params) {
+    return getRole(this.config, params)
+  }
 
   /**
-  * Deletes the given role and all its attached managed and inline policies
+   * Deletes the given role and all its attached managed and inline policies
    */
-  removeRole(params) { return removeRole(this.config, params) }
+  removeRole(params) {
+    return removeRole(this.config, params)
+  }
 
   /**
    * Deletes all attached managed and inline policies for the given role
    */
-  removeRolePolicies(params) { return removeRolePolicies(this.config, params) }
+  removeRolePolicies(params) {
+    return removeRolePolicies(this.config, params)
+  }
 
   /**
    * Updates a lambda if it exists, otherwise creates a new one.
    */
-  deployLambda(params) { return deployLambda(this.config, params) }
+  deployLambda(params) {
+    return deployLambda(this.config, params)
+  }
 
   /**
    * Deploys the DNS records for an Api Gateway V2 HTTP custom domain
    */
-  deployApigDomainDns(params) { return deployApigDomainDns(this.config, params) }
+  deployApigDomainDns(params) {
+    return deployApigDomainDns(this.config, params)
+  }
 
   /**
    * Updates or creates an AppSync API
    */
-  deployAppSyncApi(params) { return deployAppSyncApi(this.config, params) }
+  deployAppSyncApi(params) {
+    return deployAppSyncApi(this.config, params)
+  }
 
   /**
    * Updates or creates an AppSync Schema
    */
-  deployAppSyncSchema(params) { return deployAppSyncSchema(this.config, params) }
+  deployAppSyncSchema(params) {
+    return deployAppSyncSchema(this.config, params)
+  }
 
   /**
    * Updates or creates AppSync Resolvers
    */
-  deployAppSyncResolvers(params) { return deployAppSyncResolvers(this.config, params) }
+  deployAppSyncResolvers(params) {
+    return deployAppSyncResolvers(this.config, params)
+  }
 
   /**
    * Generates the minimum IAM role policy that is required for the given resolvers.
    */
-  getAppSyncResolversPolicy(params) { return getAppSyncResolversPolicy(this.config, params) }
+  getAppSyncResolversPolicy(params) {
+    return getAppSyncResolversPolicy(this.config, params)
+  }
 
   /**
    * Returns the account id of the configured credentials
    */
-  getAccountId(params) { return getAccountId(this.config, params) }
+  getAccountId(params) {
+    return getAccountId(this.config, params)
+  }
 
   /**
    * Constructs a Lambda ARN from the given Lambda name
    */
-  getLambdaArn(params) { return getLambdaArn(this.config, params) }
+  getLambdaArn(params) {
+    return getLambdaArn(this.config, params)
+  }
 
   /**
    * Constructs an IAM Role ARN from the given Role name
    */
-  getRoleArn(params) { return getRoleArn(this.config, params) }
+  getRoleArn(params) {
+    return getRoleArn(this.config, params)
+  }
 
   /**
    * Constructs Table ARN from the given Table name
    */
-  getTableArn(params) { return getTableArn(this.config, params) }
+  getTableArn(params) {
+    return getTableArn(this.config, params)
+  }
 
   /**
    * Constructs ElasticSearch ARN from the given ElasticSearch domain
    */
-  getElasticSearchArn(params) { return getElasticSearchArn(this.config, params) }
+  getElasticSearchArn(params) {
+    return getElasticSearchArn(this.config, params)
+  }
 
   /**
    * Constructs RDS ARN from the given dbClusterIdentifier
    */
-  getRdsArn(params) { return getRdsArn(this.config, params) }
+  getRdsArn(params) {
+    return getRdsArn(this.config, params)
+  }
 
   /**
    * Constructs CloudWatch Log Group ARN from the given lambdaName or logGroupName
    */
-  getCloudWatchLogGroupArn(params) { return getCloudWatchLogGroupArn(this.config, params) }
+  getCloudWatchLogGroupArn(params) {
+    return getCloudWatchLogGroupArn(this.config, params)
+  }
 
   /**
    * Removes a Lambda function. Does nothing if already removed.
    */
-  removeLambda(params) { return removeLambda(this.config, params) }
+  removeLambda(params) {
+    return removeLambda(this.config, params)
+  }
 
   /**
    * Removes an AppSync API. Does nothing if already removed.
    */
-  removeAppSyncApi(params) { return removeAppSyncApi(this.config, params) }
+  removeAppSyncApi(params) {
+    return removeAppSyncApi(this.config, params)
+  }
 
   /**
    * Creates an AppSync API Key that is valid for 1 year
    */
-  createAppSyncApiKey(params) { return createAppSyncApiKey(this.config, params) }
+  createAppSyncApiKey(params) {
+    return createAppSyncApiKey(this.config, params)
+  }
 
   /**
    * Updates or creats an AppSync API Key
    */
-  deployAppSyncApiKey(params) { return deployAppSyncApiKey(this.config, params) }
+  deployAppSyncApiKey(params) {
+    return deployAppSyncApiKey(this.config, params)
+  }
 
   /**
    * Updates or creats a CloudFront distribution for AppSync API
    */
-  deployAppSyncDistribution(params) { return deployAppSyncDistribution(this.config, params) }
+  deployAppSyncDistribution(params) {
+    return deployAppSyncDistribution(this.config, params)
+  }
 
   /**
    * Updates or creats a CloudFront distribution for AppSync API
    */
-  deployDistribution(params) { return deployDistribution(this.config, params) }
+  deployDistribution(params) {
+    return deployDistribution(this.config, params)
+  }
 
   /**
    * Disables a CloudFront distribution
    */
-  disableDistribution(params) { return disableDistribution(this.config, params) }
+  disableDistribution(params) {
+    return disableDistribution(this.config, params)
+  }
 
   /**
    * Removes a CloudFront distribution. If distribution is enabled, it just disables it.
    * If distribution is already disabled, it removes it completely.
    */
-  removeDistribution(params) { return removeDistribution(this.config, params) }
-
+  removeDistribution(params) {
+    return removeDistribution(this.config, params)
+  }
 }
 
 /**
  * Export
  */
 
-AWS.Extras = Extras;
-module.exports = AWS;
+AWS.Extras = Extras
+module.exports = AWS

@@ -5,7 +5,6 @@ const { sleep } = require('./utils')
 const getRoleArn = require('./getRoleArn')
 const getLambdaArn = require('./getLambdaArn')
 
-
 const listResolvers = async (config, params) => {
   const appSync = new AWS.AppSync(config)
 
