@@ -3,7 +3,7 @@
 The AWS SDK + a handful of extra convenience methods.
 
 ```js
-// require the serverless aws sdk.
+// require aws-sdk-extra
 const aws = require(`@serverless/aws-sdk-extra`)
 
 // set credentials, as usual.
