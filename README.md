@@ -1,10 +1,10 @@
-# Serverless AWS SDK
+# AWS SDK Extra
 
-The aws sdk + powerful high-level serverless utils.
+The AWS SDK + a handful of extra convenience methods.
 
 ```js
 // require the serverless aws sdk.
-const aws = require(`@serverless/aws-sdk`)
+const aws = require(`@serverless/aws-sdk-extra`)
 
 // set credentials, as usual.
 aws.config.update({
@@ -12,11 +12,14 @@ aws.config.update({
   region: 'us-east-1'
 })
 
-// use any service, as usual.
+// initialize any service, as usual.
 const s3 = new aws.S3()
 
-// use some powerful utils. More info below.
-const certificate = await aws.utils.deployCertificate(params)
+// initialize the extra service for more power
+const extra = new aws.Extra()
+
+// call some powerful extra methods. More info below.
+const certificate = await extra.deployCertificate(params)
 ```
 
 # Reference
@@ -49,7 +52,7 @@ const {
   certificateArn,
   certificateStatus,
   domainHostedZoneId
-} = await aws.utils.deployDistributionDomain(params)
+} = await extra.deployDistributionDomain(params)
 ```
 
 # deployCertificate
@@ -61,7 +64,7 @@ const params = {
   domain: 'serverless.com'
 }
 
-const { certificateArn, certificateStatus, domainHostedZoneId } = await aws.utils.deployCertificate(
+const { certificateArn, certificateStatus, domainHostedZoneId } = await extra.deployCertificate(
   params
 )
 ```
@@ -76,7 +79,7 @@ const params = {
   distributionUrl: 'xxx.cloudfront.net'
 }
 
-const { domainHostedZoneId } = await aws.utils.deployDistributionDns(params)
+const { domainHostedZoneId } = await extra.deployDistributionDns(params)
 ```
 
 # addDomainToDistribution
@@ -90,7 +93,7 @@ const params = {
   certificateStatus: 'ISSUED'
 }
 
-const { domainHostedZoneId } = await aws.utils.addDomainToDistribution(params)
+const { domainHostedZoneId } = await extra.addDomainToDistribution(params)
 ```
 
 # getDomainHostedZoneId
@@ -102,7 +105,7 @@ const params = {
   domain: 'serverless.com'
 }
 
-const { domainHostedZoneId } = await aws.utils.getDomainHostedZoneId(params)
+const { domainHostedZoneId } = await extra.getDomainHostedZoneId(params)
 ```
 
 # deployRole
@@ -126,7 +129,7 @@ const params = {
     }
   ]
 }
-const { roleArn } = await aws.utils.deployRole(params)
+const { roleArn } = await extra.deployRole(params)
 ```
 
 Or you can specify the policy as a maanged policy arn string:
@@ -137,7 +140,7 @@ const params = {
   service: 'lambda.amazonaws.com',
   policy: 'arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole'
 }
-const { roleArn } = await aws.utils.deployRole(params)
+const { roleArn } = await extra.deployRole(params)
 ```
 
 If you don't specify a policy property, an admin policy will be created by default.
@@ -151,7 +154,7 @@ const params = {
   name: 'my-role'
 }
 
-await aws.utils.removeRole(params)
+await extra.removeRole(params)
 ```
 
 # removeRolePolicies
@@ -163,7 +166,7 @@ const params = {
   name: 'my-role'
 }
 
-await aws.utils.removeRolePolicies(params)
+await extra.removeRolePolicies(params)
 ```
 
 # deployLambda
@@ -184,7 +187,7 @@ const lambdaParams = {
       - subnet-xxx
 }
 
-const { lambdaArn, lambdaSize, lambdaSha } = await aws.utils.deployLambda(params)
+const { lambdaArn, lambdaSize, lambdaSha } = await extra.deployLambda(params)
 ```
 
 # deployApigDomainDns
@@ -198,7 +201,7 @@ const lambdaParams = {
   apigatewayDomainName: 'd-qwertyuiop.xxx.com' // required. The regional endpoint of the APIG custom domain
 }
 
-const { domainHostedZoneId } = await aws.utils.deployApigDomainDns(params)
+const { domainHostedZoneId } = await extra.deployApigDomainDns(params)
 ```
 
 # deployAppSyncApi
@@ -211,7 +214,7 @@ const deployAppSyncApiParams = {
   apiId: 'xxx' // if provided, updates the API. If not provided, creates a new API
 }
 
-const { apiId, apiUrls } = await aws.utils.deployAppSyncApi(params)
+const { apiId, apiUrls } = await extra.deployAppSyncApi(params)
 ```
 
 # deployAppSyncSchema
@@ -224,7 +227,7 @@ const deployAppSyncSchemaParams = {
   schema: '...' // valid graphql schema
 }
 
-await aws.utils.deployAppSyncApi(params)
+await extra.deployAppSyncApi(params)
 ```
 
 # deployAppSyncResolvers
@@ -249,5 +252,5 @@ const deployAppSyncResolversParams = {
   }
 }
 
-await aws.utils.deployAppSyncResolvers(params)
+await extra.deployAppSyncResolvers(params)
 ```
