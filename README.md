@@ -3,7 +3,7 @@
 The AWS SDK + a handful of extra convenience methods.
 
 ```js
-// require aws-sdk-extra
+// require aws-sdk-extra, instead of the official aws-sdk
 const aws = require(`@serverless/aws-sdk-extra`)
 
 // initialize any service, as usual.
@@ -12,7 +12,7 @@ const s3 = new aws.S3({
   region: 'us-east-1'
 })
 
-// initialize the extra service for more power
+// initialize the extra service for extra methods
 const extra = new aws.Extra({
   credentials: { accessKeyId: 'xxx', secretAccessKey: 'xxx' },
   region: 'us-east-1'
