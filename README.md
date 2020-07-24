@@ -12,7 +12,7 @@ const s3 = new aws.S3({
   region: 'us-east-1'
 })
 
-// initialize the extra service for extra methods
+// initialize the Extra service for extra methods
 const extra = new aws.Extra({
   credentials: { accessKeyId: 'xxx', secretAccessKey: 'xxx' },
   region: 'us-east-1'
