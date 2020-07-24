@@ -6,17 +6,17 @@ The AWS SDK + a handful of extra convenience methods.
 // require aws-sdk-extra
 const aws = require(`@serverless/aws-sdk-extra`)
 
-// set credentials, as usual.
-aws.config.update({
+// initialize any service, as usual.
+const s3 = new aws.S3({
   credentials: { accessKeyId: 'xxx', secretAccessKey: 'xxx' },
   region: 'us-east-1'
 })
 
-// initialize any service, as usual.
-const s3 = new aws.S3()
-
 // initialize the extra service for more power
-const extra = new aws.Extra()
+const extra = new aws.Extra({
+  credentials: { accessKeyId: 'xxx', secretAccessKey: 'xxx' },
+  region: 'us-east-1'
+})
 
 // call some powerful extra methods. More info below.
 const certificate = await extra.deployCertificate(params)
