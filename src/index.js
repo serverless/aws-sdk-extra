@@ -30,6 +30,8 @@ const deployDistribution = require('./deployDistribution')
 const disableDistribution = require('./disableDistribution')
 const removeDistribution = require('./removeDistribution')
 const getMetrics = require('./getMetrics')
+const deployStack = require('./deployStack')
+const removeStack = require('./removeStack')
 
 /**
  * Define AWS Extras class
@@ -292,6 +294,20 @@ class Extras {
    */
   removeDistribution(params) {
     return removeDistribution(this.config, params)
+  }
+
+  /**
+   * Creates or updates a CloudFormation stack.
+   */
+  deployStack(params) {
+    return deployStack(this.config, params)
+  }
+
+  /**
+   * Removes a CloudFormation stack
+   */
+  removeStack(params) {
+    return removeStack(this.config, params)
   }
 }
 

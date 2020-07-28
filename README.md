@@ -37,6 +37,8 @@ const certificate = await extra.deployCertificate(params)
 - [deployAppSyncApi](#deployAppSyncApi)
 - [deployAppSyncSchema](#deployAppSyncSchema)
 - [deployAppSyncResolvers](#deployAppSyncResolvers)
+- [deployStack](#deployStack)
+- [removeStack](#removeStack)
 
 # deployDistributionDomain
 
@@ -174,7 +176,7 @@ await extra.removeRolePolicies(params)
 Updates a lambda if it exists, otherwise creates a new one.
 
 ```js
-const lambdaParams = {
+const params = {
   lambdaName: 'my-lambda', // required
   roleArn: 'aws:iam:role:arn:xxx', // required
   lambdaSrc: 'path/to/lambda/directory' // required. could also be a buffer of a zip file
@@ -195,7 +197,7 @@ const { lambdaArn, lambdaSize, lambdaSha } = await extra.deployLambda(params)
 Deploys the DNS records for an Api Gateway V2 HTTP custom domain
 
 ```js
-const lambdaParams = {
+const params = {
   domain: 'serverless.com', // required. The custom domain you'd like to configure.
   apigatewayHostedZoneId: 'qwertyuiop', // required. The regional hosted zone id of the APIG custom domain
   apigatewayDomainName: 'd-qwertyuiop.xxx.com' // required. The regional endpoint of the APIG custom domain
@@ -209,7 +211,7 @@ const { domainHostedZoneId } = await extra.deployApigDomainDns(params)
 Updates or creates an AppSync API
 
 ```js
-const deployAppSyncApiParams = {
+const params = {
   apiName: 'my-api',
   apiId: 'xxx' // if provided, updates the API. If not provided, creates a new API
 }
@@ -222,7 +224,7 @@ const { apiId, apiUrls } = await extra.deployAppSyncApi(params)
 Updates or creates an AppSync Schema
 
 ```js
-const deployAppSyncSchemaParams = {
+const params = {
   apiId: 'xxx', // the targeted api id
   schema: '...' // valid graphql schema
 }
@@ -235,7 +237,7 @@ await extra.deployAppSyncApi(params)
 Updates or creates AppSync Resolvers
 
 ```js
-const deployAppSyncResolversParams = {
+const params = {
   apiId,
   roleName: 'my-role', // name of the role that provides access for these resources to the required resources
   resolvers: {
@@ -253,4 +255,59 @@ const deployAppSyncResolversParams = {
 }
 
 await extra.deployAppSyncResolvers(params)
+```
+
+# deployStack
+
+Updates or creates a CloudFormation stack.
+
+```js
+const inputs = {
+  stackName: 'my-stack', // required
+  template: {
+    // required
+    AWSTemplateFormatVersion: '2010-09-09',
+    Description: 'Example Stack',
+    Resources: {
+      LogGroup: {
+        Type: 'AWS::Logs::LogGroup',
+        Properties: {
+          LogGroupName: '/log/group/one',
+          RetentionInDays: 14
+        }
+      }
+    },
+    Outputs: {
+      firstStackOutput: {
+        Value: {
+          'Fn::GetAtt': ['LogGroup', 'Arn']
+        }
+      },
+      secondStackOutput: {
+        Value: {
+          'Fn::GetAtt': ['LogGroup', 'Arn']
+        }
+      }
+    }
+  },
+  capabilities: ['CAPABILITY_IAM'],
+  parameters: {
+    firstParameter: 'value'
+  },
+  role: 'arn:iam:xxx'
+}
+
+const outputs = await extra.deployStack(params)
+```
+
+# removeStack
+
+Removes a CloudFormation stack if it exists.
+
+```js
+const prams = {
+  stackName: 'my-stack' // name of the stack you want to remove
+}
+
+await extra.removeStack(params)
 ```
