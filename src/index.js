@@ -32,6 +32,10 @@ const removeDistribution = require('./removeDistribution')
 const getMetrics = require('./getMetrics')
 const deployStack = require('./deployStack')
 const removeStack = require('./removeStack')
+const listAllAwsRegions = require('./listAllAwsRegions')
+const listAllCloudFormationStacksInARegion = require('./listAllCloudFormationStacksInARegion')
+const listAllCloudFormationStacksInAllRegions = require('./listAllCloudFormationStacksInAllRegions')
+const listAllCloudFormationStackResources = require('./listAllCloudFormationStackResources')
 
 /**
  * Define AWS Extras class
@@ -308,6 +312,34 @@ class Extras {
    */
   removeStack(params) {
     return removeStack(this.config, params)
+  }
+
+  /**
+   * List all AWS Regions currently available, formatted for SDK input, in an array
+   */
+  listAllAwsRegions() {
+    return listAllAwsRegions()
+  }
+
+  /**
+   * Performs one or multiple API requests until all AWS CloudFormation Stacks are collected within a specified region and returned in an array.
+   */
+  listAllCloudFormationStacksInARegion(params) {
+    return listAllCloudFormationStacksInARegion(this.config, params)
+  }
+
+  /**
+   * Performs one or multiple API requests until all AWS CloudFormation Stacks in all regions are collected and returned in an array.
+   */
+  listAllCloudFormationStacksInAllRegions(params) {
+    return listAllCloudFormationStacksInAllRegions(this.config, params)
+  }
+
+  /**
+   * Performs one or multiple API requests until summaries for all resources in an AWS CloudFormation Stack are collected and returned as an array.
+   */
+  listAllCloudFormationStackResources(params) {
+    return listAllCloudFormationStackResources(this.config, params)
   }
 }
 
