@@ -43,7 +43,7 @@ const listAllCloudFormationStacksInARegion = async (
       summary.Region = region
     })
 
-    stacks = stacks.concat(stacks, res.StackSummaries);
+    stacks = stacks.concat(res.StackSummaries);
   }
 
   // If NextToken, call again...
