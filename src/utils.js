@@ -1,13 +1,18 @@
 const AdmZip = require('adm-zip')
 const mergeDeep = require('merge-deep')
+const { parseDomain } = require('parse-domain')
 
 const sleep = async (wait) => new Promise((resolve) => setTimeout(() => resolve(), wait))
 
 const getNakedDomain = (domain) => {
-  const domainParts = domain.split('.')
-  const topLevelDomainPart = domainParts[domainParts.length - 1]
-  const secondLevelDomainPart = domainParts[domainParts.length - 2]
-  return `${secondLevelDomainPart}.${topLevelDomainPart}`
+  const parsedDomain = parseDomain(domain)
+
+  if (!parsedDomain.topLevelDomains) {
+    throw new Error(`"${domain}" is not a valid domain.`)
+  }
+
+  const nakedDomain = `${parsedDomain.domain}.${parsedDomain.topLevelDomains.join('.')}`
+  return nakedDomain
 }
 
 const shouldConfigureNakedDomain = (domain) => {

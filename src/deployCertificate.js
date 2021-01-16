@@ -34,8 +34,8 @@ const describeCertificateByArn = async (acm, certificateArn, nakedDomain) => {
   return certificate
 }
 
-module.exports = async (config, params = {}) => {
-  params.log = params.log || (() => { })
+const deployCertificate = async (config, params = {}) => {
+  params.log = params.log || (() => {})
   const { log } = params
   const nakedDomain = getNakedDomain(params.domain)
   const wildcardSubDomain = `*.${nakedDomain}`
@@ -62,8 +62,28 @@ module.exports = async (config, params = {}) => {
 
   log(`Certificate for ${nakedDomain} is in a "${certificate.Status}" status`)
 
+  if (certificate.Status === 'FAILED') {
+    // todo could this be infinit loop if alwayss failing?
+    await acm.deleteCertificate({ CertificateArn: certificate.CertificateArn }).promise()
+
+    return deployCertificate(config, params)
+  }
+
+  const outputs = {
+    domainHostedZoneId,
+    certificateArn,
+    certificateStatus: certificate.Status
+  }
+
   if (certificate.Status === 'PENDING_VALIDATION') {
     const certificateValidationRecord = getCertificateValidationRecord(certificate, nakedDomain)
+
+    outputs.certificateValidationRecord = {
+      type: certificateValidationRecord.Type,
+      name: certificateValidationRecord.Name,
+      value: certificateValidationRecord.Value
+    }
+
     // only validate if domain/hosted zone is found in this account
     if (domainHostedZoneId) {
       log(`Validating the certificate for the ${nakedDomain} domain.`)
@@ -89,6 +109,10 @@ module.exports = async (config, params = {}) => {
         }
       }
       await route53.changeResourceRecordSets(recordParams).promise()
+
+      // todo wait on certificate validation
+      // todo skip validation if domain not in account
+
       log(
         `Your certificate was created and is being validated. It may take a few mins to validate.`
       )
@@ -106,9 +130,7 @@ module.exports = async (config, params = {}) => {
     }
   }
 
-  return {
-    domainHostedZoneId,
-    certificateArn,
-    certificateStatus: certificate.Status
-  }
+  return outputs
 }
+
+module.exports = deployCertificate

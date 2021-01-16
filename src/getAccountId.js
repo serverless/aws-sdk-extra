@@ -9,4 +9,5 @@ const getAccountId = async (config) => {
   return res.Account
 }
 
+// memoize does not work nicely with lambda when it's hot
 module.exports = memoizeWith(identity, getAccountId)

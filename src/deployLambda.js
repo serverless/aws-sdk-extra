@@ -2,7 +2,6 @@ const AWS = require('aws-sdk')
 const fs = require('fs')
 const { sleep, zip } = require('./utils')
 
-
 const getVpcConfig = (vpcConfig) => {
   if (vpcConfig == 'undefined' || vpcConfig == null) {
     return {
@@ -17,7 +16,7 @@ const getVpcConfig = (vpcConfig) => {
   }
 }
 
-const updateOrCreateLambda = async (config, params = {}) => {
+const deployLambda = async (config, params = {}) => {
   try {
     if (!params.lambdaName) {
       throw new Error(`Missing lambdaName param.`)
@@ -115,12 +114,15 @@ const updateOrCreateLambda = async (config, params = {}) => {
       }
     }
   } catch (e) {
-    if (e.message.includes('The role defined for the function cannot be assumed by Lambda')) {
+    if (
+      e.message.includes('The role defined for the function cannot be assumed by Lambda') ||
+      e.message.includes('Lambda was unable to configure access to your environment variables')
+    ) {
       await sleep(1000)
-      return updateOrCreateLambda(config, params)
+      return deployLambda(config, params)
     }
     throw e
   }
 }
 
-module.exports = updateOrCreateLambda
+module.exports = deployLambda

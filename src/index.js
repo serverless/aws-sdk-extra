@@ -9,6 +9,7 @@ const getRole = require('./getRole')
 const removeRole = require('./removeRole')
 const removeRolePolicies = require('./removeRolePolicies')
 const deployLambda = require('./deployLambda')
+const deployApi = require('./deployApi')
 const deployApigDomainDns = require('./deployApigDomainDns')
 const deployAppSyncApi = require('./deployAppSyncApi')
 const deployAppSyncSchema = require('./deployAppSyncSchema')
@@ -32,6 +33,9 @@ const removeDistribution = require('./removeDistribution')
 const getMetrics = require('./getMetrics')
 const deployStack = require('./deployStack')
 const removeStack = require('./removeStack')
+const deployAccount = require('./deployAccount')
+const deployAdmin = require('./deployAdmin')
+const getTempCredentials = require('./getTempCredentials')
 
 /**
  * Define AWS Extras class
@@ -160,6 +164,13 @@ class Extras {
    */
   deployApigDomainDns(params) {
     return deployApigDomainDns(this.config, params)
+  }
+
+  /**
+   * Deploys an API Gateway V2 API
+   */
+  deployApi(params) {
+    return deployApi(this.config, params)
   }
 
   /**
@@ -308,6 +319,27 @@ class Extras {
    */
   removeStack(params) {
     return removeStack(this.config, params)
+  }
+
+  /**
+   * Deploys an AWS account
+   */
+  deployAccount(params) {
+    return deployAccount(this.config, params)
+  }
+
+  /**
+   * Deploys an admin user to the executing aws account
+   */
+  deployAdmin(params) {
+    return deployAdmin(this.config, params)
+  }
+
+  /**
+   * Deploys an admin user to the executing aws account
+   */
+  getTempCredentials(params) {
+    return getTempCredentials(this.config, params)
   }
 }
 

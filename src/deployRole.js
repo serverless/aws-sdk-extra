@@ -15,7 +15,6 @@ const updateRolePolicy = async (config, params = {}) => {
         PolicyArn: params.policy
       })
       .promise()
-
   } else {
     // Otherwise, create an inline policy
 
@@ -29,7 +28,9 @@ const updateRolePolicy = async (config, params = {}) => {
     } else if (params.policy.Statement) {
       policyDocument = params.policy
     } else {
-      throw new Error('Invalid "policy" param.  This can either be a standard IAM Policy object, or an array of Statements to be included in a larger policy object.')
+      throw new Error(
+        'Invalid "policy" param.  This can either be a standard IAM Policy object, or an array of Statements to be included in a larger policy object.'
+      )
     }
 
     await iam
@@ -103,7 +104,6 @@ const createRole = async (config, params = {}) => {
 }
 
 module.exports = async (config, params = {}) => {
-
   /**
    * Validate
    */
