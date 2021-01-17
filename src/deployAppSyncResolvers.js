@@ -152,7 +152,7 @@ const deployAppSyncDataSource = async (config, params) => {
     dataSourceParams.name = params.name || getDataSourceName(params.database)
     dataSourceParams.type = 'RELATIONAL_DATABASE'
     dataSourceParams.relationalDatabaseConfig = {
-      relationalDatabaseSourceType: params.relationalDatabaseSourceType,
+      relationalDatabaseSourceType: params.relationalDatabaseSourceType || 'RDS_HTTP_ENDPOINT',
       rdsHttpEndpointConfig: {
         awsRegion: params.endpointRegion || config.region,
         awsSecretStoreArn: params.awsSecretStoreArn,
@@ -246,8 +246,8 @@ const getDataSourcesNames = (resolvers) => {
 
   for (const type in resolvers) {
     for (const field in resolvers[type]) {
-      const { lambda, table } = resolvers[type][field]
-      const dataSourceName = getDataSourceName(lambda || table)
+      const { name, lambda, table, database } = resolvers[type][field]
+      const dataSourceName = getDataSourceName(name || lambda || table || database)
       dataSourcesNames.push(dataSourceName)
     }
   }

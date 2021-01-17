@@ -55,9 +55,6 @@ module.exports = async (config, params) => {
         })
       } else if (resolver.relationalDatabaseSourceType) {
         // relational database
-        const rdsArn = await getRdsArn(config, {
-          dbClusterIdentifier: resolver.dbClusterIdentifier
-        })
 
         policy.push({
           Effect: 'Allow',
@@ -69,7 +66,7 @@ module.exports = async (config, params) => {
             'rds-data:InsertItems',
             'rds-data:UpdateItems'
           ],
-          Resource: `${rdsArn}*`
+          Resource: [`${resolver.dbClusterIdentifier}*`, `${resolver.dbClusterIdentifier}:*`]
         })
 
         policy.push({
