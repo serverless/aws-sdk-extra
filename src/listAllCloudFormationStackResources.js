@@ -30,7 +30,7 @@ const listAllCloudFormationStackResources = async (
 
   // Concatenate stacks
   if (res.StackResourceSummaries && res.StackResourceSummaries.length) {
-    resources = resources.concat(resources, res.StackResourceSummaries);
+    resources = resources.concat(res.StackResourceSummaries);
   }
 
   // If NextToken, call again...
