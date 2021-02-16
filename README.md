@@ -12,14 +12,14 @@ const s3 = new aws.S3({
   region: 'us-east-1'
 })
 
-// initialize the Extra service for extra methods
-const extra = new aws.Extra({
+// initialize the Extras service for extra methods
+const extras = new aws.Extras({
   credentials: { accessKeyId: 'xxx', secretAccessKey: 'xxx' },
   region: 'us-east-1'
 })
 
 // call some powerful extra methods. More info below.
-const certificate = await extra.deployCertificate(params)
+const certificate = await extras.deployCertificate(params)
 ```
 
 # Reference
@@ -54,7 +54,7 @@ const {
   certificateArn,
   certificateStatus,
   domainHostedZoneId
-} = await extra.deployDistributionDomain(params)
+} = await extras.deployDistributionDomain(params)
 ```
 
 # deployCertificate
@@ -66,7 +66,7 @@ const params = {
   domain: 'serverless.com'
 }
 
-const { certificateArn, certificateStatus, domainHostedZoneId } = await extra.deployCertificate(
+const { certificateArn, certificateStatus, domainHostedZoneId } = await extras.deployCertificate(
   params
 )
 ```
@@ -81,7 +81,7 @@ const params = {
   distributionUrl: 'xxx.cloudfront.net'
 }
 
-const { domainHostedZoneId } = await extra.deployDistributionDns(params)
+const { domainHostedZoneId } = await extras.deployDistributionDns(params)
 ```
 
 # addDomainToDistribution
@@ -95,7 +95,7 @@ const params = {
   certificateStatus: 'ISSUED'
 }
 
-const { domainHostedZoneId } = await extra.addDomainToDistribution(params)
+const { domainHostedZoneId } = await extras.addDomainToDistribution(params)
 ```
 
 # getDomainHostedZoneId
@@ -107,7 +107,7 @@ const params = {
   domain: 'serverless.com'
 }
 
-const { domainHostedZoneId } = await extra.getDomainHostedZoneId(params)
+const { domainHostedZoneId } = await extras.getDomainHostedZoneId(params)
 ```
 
 # deployRole
@@ -131,7 +131,7 @@ const params = {
     }
   ]
 }
-const { roleArn } = await extra.deployRole(params)
+const { roleArn } = await extras.deployRole(params)
 ```
 
 Or you can specify the policy as a maanged policy arn string:
@@ -142,7 +142,7 @@ const params = {
   service: 'lambda.amazonaws.com',
   policy: 'arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole'
 }
-const { roleArn } = await extra.deployRole(params)
+const { roleArn } = await extras.deployRole(params)
 ```
 
 If you don't specify a policy property, an admin policy will be created by default.
@@ -156,7 +156,7 @@ const params = {
   name: 'my-role'
 }
 
-await extra.removeRole(params)
+await extras.removeRole(params)
 ```
 
 # removeRolePolicies
@@ -168,7 +168,7 @@ const params = {
   name: 'my-role'
 }
 
-await extra.removeRolePolicies(params)
+await extras.removeRolePolicies(params)
 ```
 
 # deployLambda
@@ -189,7 +189,7 @@ const params = {
       - subnet-xxx
 }
 
-const { lambdaArn, lambdaSize, lambdaSha } = await extra.deployLambda(params)
+const { lambdaArn, lambdaSize, lambdaSha } = await extras.deployLambda(params)
 ```
 
 # deployApigDomainDns
@@ -203,7 +203,7 @@ const params = {
   apigatewayDomainName: 'd-qwertyuiop.xxx.com' // required. The regional endpoint of the APIG custom domain
 }
 
-const { domainHostedZoneId } = await extra.deployApigDomainDns(params)
+const { domainHostedZoneId } = await extras.deployApigDomainDns(params)
 ```
 
 # deployAppSyncApi
@@ -216,7 +216,7 @@ const params = {
   apiId: 'xxx' // if provided, updates the API. If not provided, creates a new API
 }
 
-const { apiId, apiUrls } = await extra.deployAppSyncApi(params)
+const { apiId, apiUrls } = await extras.deployAppSyncApi(params)
 ```
 
 # deployAppSyncSchema
@@ -229,7 +229,7 @@ const params = {
   schema: '...' // valid graphql schema
 }
 
-await extra.deployAppSyncApi(params)
+await extras.deployAppSyncApi(params)
 ```
 
 # deployAppSyncResolvers
@@ -254,7 +254,7 @@ const params = {
   }
 }
 
-await extra.deployAppSyncResolvers(params)
+await extras.deployAppSyncResolvers(params)
 ```
 
 # deployStack
@@ -297,7 +297,7 @@ const inputs = {
   role: 'arn:iam:xxx'
 }
 
-const outputs = await extra.deployStack(params)
+const outputs = await extras.deployStack(params)
 ```
 
 # removeStack
@@ -309,5 +309,5 @@ const prams = {
   stackName: 'my-stack' // name of the stack you want to remove
 }
 
-await extra.removeStack(params)
+await extras.removeStack(params)
 ```
