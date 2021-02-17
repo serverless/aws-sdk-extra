@@ -1,5 +1,4 @@
 const AWS = require('aws-sdk')
-const { memoizeWith, identity } = require('ramda')
 
 const getAccountId = async (config) => {
   const sts = new AWS.STS(config)
@@ -9,4 +8,4 @@ const getAccountId = async (config) => {
   return res.Account
 }
 
-module.exports = memoizeWith(identity, getAccountId)
+module.exports = getAccountId
