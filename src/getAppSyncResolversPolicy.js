@@ -1,7 +1,6 @@
 const getLambdaArn = require('./getLambdaArn')
 const getTableArn = require('./getTableArn')
 const getElasticSearchArn = require('./getElasticSearchArn')
-const getRdsArn = require('./getRdsArn')
 
 module.exports = async (config, params) => {
   const resolvers = params
