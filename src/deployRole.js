@@ -48,19 +48,6 @@ const updateRole = async (config, params = {}) => {
 
   const res = await iam.getRole({ RoleName: params.roleName }).promise()
 
-  if (!params.assumeRolePolicyDocument) {
-    params.assumeRolePolicyDocument = {
-      Version: '2012-10-17',
-      Statement: {
-        Effect: 'Allow',
-        Principal: {
-          Service: params.service
-        },
-        Action: 'sts:AssumeRole'
-      }
-    }
-  }
-
   await iam
     .updateAssumeRolePolicy({
       RoleName: params.roleName,
@@ -75,19 +62,6 @@ const updateRole = async (config, params = {}) => {
 
 const createRole = async (config, params = {}) => {
   const iam = new AWS.IAM(config)
-
-  if (!params.assumeRolePolicyDocument) {
-    params.assumeRolePolicyDocument = {
-      Version: '2012-10-17',
-      Statement: {
-        Effect: 'Allow',
-        Principal: {
-          Service: params.service
-        },
-        Action: 'sts:AssumeRole'
-      }
-    }
-  }
 
   const res = await iam
     .createRole({
@@ -111,12 +85,20 @@ module.exports = async (config, params = {}) => {
     throw new Error(`Missing "roleName" param.`)
   }
 
-  params.service = params.service || 'lambda.amazonaws.com'
   params.policy = params.policy || 'arn:aws:iam::aws:policy/AdministratorAccess'
 
   // assumeRolePolicyDocument should cancel out "service"
-  if (params.assumeRolePolicyDocument) {
-    params.service = null
+  if (!params.assumeRolePolicyDocument) {
+    params.assumeRolePolicyDocument = {
+      Version: '2012-10-17',
+      Statement: {
+        Effect: 'Allow',
+        Principal: {
+          Service: params.service || 'lambda.amazonaws.com'
+        },
+        Action: 'sts:AssumeRole'
+      }
+    }
   }
 
   try {
